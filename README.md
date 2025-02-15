@@ -4,7 +4,7 @@ My daily use Neovim config.
 <!--screenshot image-->
 ![screenshot](./.assets/1.png)
 
-# Plugins
+## Plugins
 - plugin manager: lazy.nvim
 - find & replace: `grug-far`
 - file explorer: `oil`
@@ -20,5 +20,5 @@ My daily use Neovim config.
 - statusline: `lualine`
 - layout utils: `noice x nui`
 
-# Custom Commands
-The following custom commands are built for my specific use case. So it may not be useful for most users.
+## Custom Commands
+Disclaimer: Custom commands in `user.lua` are built for my specific use case. So it may not be useful for most users.
