@@ -24,15 +24,15 @@ vim.opt.rtp:prepend(lazypath)
 -- end bootstrap lazy.nvim
 
 -- vim options
-require('config.opt') -- make sure loaded before lazy plugins setup
+require('_.opt') -- make sure loaded before lazy plugins setup
 
 -- keybindings
-require('config.key') -- make sure loaded before lazy plugins setup
+require('_.key') -- make sure loaded before lazy plugins setup
 
 -- lazy plugins setup
 require('lazy').setup({
   spec = {
-    { import = 'plugins' }, -- load from dir /plugins
+    { import = 'plug' }, -- load from dir /plugins
   },
   install = { colorscheme = { 'kanagawa-dragon' } },
   checker = { enabled = true }, -- automatically check for plugin updates

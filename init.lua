@@ -1,1 +1,1 @@
-require 'config.lazy'
+require'_.lazy'
