@@ -2,7 +2,7 @@
 My daily use Neovim config.
 
 <!--screenshot image-->
-![screenshot](./.assets/0.png)
+![screenshot](./.assets/1.png)
 
 # Plugins
 - plugin manager: lazy.nvim
