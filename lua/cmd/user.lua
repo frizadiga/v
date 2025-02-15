@@ -71,63 +71,77 @@ vim.api.nvim_create_user_command(
   {}
 )
 
--- copy current filepath in remote url to clipboard
 vim.api.nvim_create_user_command(
   'CopyRemoteUrl',
   function()
     local file_path = vim.fn.expand('%:p')
 
-    -- get the git root of the main repository
-    local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
-
-    -- check if the file is in a submodule
-    local is_submodule = false
-    local submodule_root = ''
-    local submodule_path = ''
-
-    -- get list of submodules and their paths
-    local submodules = vim.fn.system('git config --file .gitmodules --get-regexp path'):gsub('\n$', '')
-    if submodules ~= '' then
-      for line in submodules:gmatch('[^\n]+') do
-        local _, path = line:match('submodule%.(.-)%.path%s+(.*)')
-        if path then
-          local full_path = git_root .. '/' .. path
-          if file_path:sub(1, #full_path) == full_path then
-            is_submodule = true
-            submodule_path = path
-            -- get the submodule root
-            submodule_root = vim.fn.system('cd ' .. full_path .. ' && git rev-parse --show-toplevel'):gsub('\n', '')
-            break
+    -- get submodule info for a given path
+    local function get_submodule_info(path)
+      local submodules = vim.fn.system('cd ' .. path .. ' && git config --file .gitmodules --get-regexp path'):gsub('\n$', '')
+      local result = {}
+      if submodules ~= '' then
+        for line in submodules:gmatch('[^\n]+') do
+          local _, submodule_path = line:match('submodule%.(.-)%.path%s+(.*)')
+          if submodule_path then
+            local full_path = path .. '/' .. submodule_path
+            table.insert(result, {
+              path = submodule_path,
+              full_path = full_path
+            })
           end
+        end
+      end
+      return result
+    end
+
+    -- get repository info for a path
+    local function get_repo_info(path)
+      local root = vim.fn.system('cd ' .. path .. ' && git rev-parse --show-toplevel'):gsub('\n', '')
+      local remote = vim.fn.system('cd ' .. path .. ' && git remote get-url origin'):gsub('\n', '')
+      local branch = vim.fn.system('cd ' .. path .. ' && git branch --show-current'):gsub('\n', '')
+      return {
+        root = root,
+        remote = remote,
+        branch = branch
+      }
+    end
+
+    -- start with the main repository
+    local current_path = vim.fn.getcwd()
+    local current_repo = get_repo_info(current_path)
+    local final_repo = current_repo
+    local found_submodule = true
+
+    while found_submodule do
+      found_submodule = false
+      local submodules = get_submodule_info(current_path)
+
+      for _, submodule in ipairs(submodules) do
+        if file_path:sub(1, #submodule.full_path) == submodule.full_path then
+          -- found a matching submodule, update current path and repo info
+          current_path = submodule.full_path
+          final_repo = get_repo_info(current_path)
+          found_submodule = true
+          break
         end
       end
     end
 
-    local relative_file_path, remote_url, current_branch
+    -- calculate relative path within the final repository
+    local relative_file_path = file_path:sub(#final_repo.root + 2)
+    local remote_url = final_repo.remote:gsub('\n', '')
+    local current_branch = final_repo.branch:gsub('\n', '')
 
-    if is_submodule then
-      -- handle submodule case
-      relative_file_path = file_path:sub(#submodule_root + 2)
-      remote_url = vim.fn.system('cd ' .. git_root .. '/' .. submodule_path .. ' && git remote get-url origin'):gsub('\n', '')
-      current_branch = vim.fn.system('cd ' .. git_root .. '/' .. submodule_path .. ' && git branch --show-current'):gsub('\n', '')
-    else
-      -- handle main repository case
-      relative_file_path = file_path:sub(#git_root + 2)
-      remote_url = vim.fn.system('git remote get-url origin'):gsub('\n', '')
-      current_branch = vim.fn.system('git branch --show-current'):gsub('\n', '')
-    end
-
+    -- process the remote URL
     if remote_url:match('^git@') then
-      -- handle SSH URL (e.g., git@github.com:user/repo.git)
       remote_url = remote_url:gsub(':', '/')
       remote_url = remote_url:gsub('%.git', '')
       remote_url = remote_url:gsub('git@', 'https://')
     end
 
     if remote_url:match('^https://') then
-      -- handle HTTPS URL (e.g., https://github.com/user/repo.git)
       remote_url = remote_url:gsub('%.git', '')
-      -- remove any token or authentication part (e.g., https://token@github.com/user/repo.git)
       remote_url = remote_url:gsub('https://[^@]+@', 'https://')
     end
 
