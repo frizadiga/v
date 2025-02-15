@@ -1,8 +1,6 @@
 local M = {}
 
-function M.syscall(cmd)
-  return vim.fn.system(cmd):gsub('\n$', '') -- only trim trailing newline
-end
+local std = require'shared.__std'
 
 function M.get_line_numbers()
   -- find the line number(s)
@@ -34,16 +32,16 @@ end
 
 function M.get_repo_info(path)
   return {
-    remote = M.syscall('cd ' .. path .. ' && git remote get-url origin'),
-    branch = M.syscall('cd ' .. path .. ' && git branch --show-current'),
-    root = M.syscall('cd ' .. path .. ' && git rev-parse --show-toplevel'),
+    remote = std.syscall('cd ' .. path .. ' && git remote get-url origin'),
+    branch = std.syscall('cd ' .. path .. ' && git branch --show-current'),
+    root = std.syscall('cd ' .. path .. ' && git rev-parse --show-toplevel'),
   }
 end
 
 function M.get_submodule_info(path)
   local result = {}
   local submodule_cmd = 'cd ' .. path .. ' && git config --file .gitmodules --get-regexp path'
-  local submodules = M.syscall(submodule_cmd)
+  local submodules = std.syscall(submodule_cmd)
 
   if submodules ~= '' then
     for line in submodules:gmatch('[^\n]+') do
