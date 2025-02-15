@@ -1,1 +1,1 @@
-require'_.lazy'
+require'core.lazy'

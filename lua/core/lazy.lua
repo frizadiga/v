@@ -24,10 +24,10 @@ vim.opt.rtp:prepend(lazypath)
 -- end bootstrap lazy.nvim
 
 -- vim options
-require('_.opt') -- make sure loaded before lazy plugins setup
+require('core.opt') -- make sure loaded before lazy plugins setup
 
 -- keybindings
-require('_.key') -- make sure loaded before lazy plugins setup
+require('core.key') -- make sure loaded before lazy plugins setup
 
 -- lazy plugins setup
 require('lazy').setup({
