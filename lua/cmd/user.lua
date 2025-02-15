@@ -9,8 +9,10 @@ local copy_to_clip = clipboard.copy_to_clip
 local git_remote_url = require'shared.git_remote_url'
 local get_git_remote_url = git_remote_url.get_git_remote_url
 
+local cmd_user = vim.api.nvim_create_user_command
+
 -- lazy.nvim dashboard alias
-vim.api.nvim_create_user_command(
+cmd_user(
   'L',
   function(opts)
     vim.cmd('Lazy ' .. opts.args)
@@ -22,7 +24,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- run nvim_list_runtime_paths
-vim.api.nvim_create_user_command(
+cmd_user(
   'RTPList',
   function()
     -- get runtime paths as table
@@ -34,7 +36,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- run todo.sh and print output
-vim.api.nvim_create_user_command(
+cmd_user(
   'Todo',
   function()
     local tools_dir = vim.fn.expand('$TOOLS_DIR')
@@ -46,7 +48,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- copy current file path to clipboard
-vim.api.nvim_create_user_command(
+cmd_user(
   'CopyPath',
   function()
     local file_path = vim.fn.expand('%:p')
@@ -56,7 +58,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- copy current file name to clipboard
-vim.api.nvim_create_user_command(
+cmd_user(
   'CopyName',
   function()
     local file_name = vim.fn.expand('%:t')
@@ -66,7 +68,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- copy current directory path to clipboard
-vim.api.nvim_create_user_command(
+cmd_user(
   'CopyDir',
   function()
     local dir_path = vim.fn.expand('%:p:h')
@@ -76,7 +78,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- copy current filepath in remote url to clipboard
-vim.api.nvim_create_user_command(
+cmd_user(
   'CopyRemoteUrl',
   function()
     local remote_url = get_git_remote_url()
@@ -86,7 +88,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- run git log
-vim.api.nvim_create_user_command(
+cmd_user(
   'GL',
   function()
     -- local output = vim.fn.system({'git', 'log', '--oneline', '--graph', '--decorate', '--all'})
@@ -98,7 +100,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- new daily open command
-vim.api.nvim_create_user_command(
+cmd_user(
   'D',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
@@ -119,7 +121,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- daily latest
-vim.api.nvim_create_user_command(
+cmd_user(
   'DL',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
@@ -140,7 +142,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- daily previous
-vim.api.nvim_create_user_command(
+cmd_user(
   'DP',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
@@ -161,7 +163,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- info detail ticket
-vim.api.nvim_create_user_command(
+cmd_user(
   'TicketDetail',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
@@ -173,7 +175,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- open ticket markdown
-vim.api.nvim_create_user_command(
+cmd_user(
   'TicketMd',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
@@ -194,7 +196,7 @@ vim.api.nvim_create_user_command(
 )
 
 -- open tabs ticket related
-vim.api.nvim_create_user_command(
+cmd_user(
   'TicketTabs',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')

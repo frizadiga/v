@@ -16,9 +16,9 @@ My daily use Neovim config.
 - lsp: `nvim-lspconfig`
 - lsp installer manager: `mason`
 - nvim source completion: `blink`
-- ai completion: `copilot x copilot-chat`
+- LLM completion: `copilot x copilot-chat`
 - statusline: `lualine`
 - layout utils: `noice x nui`
 
 ## Custom Commands
-Disclaimer: Custom commands in `user.lua` are built for my specific use case. So it may not be useful for most users.
+Disclaimer: Custom commands in `/cmd/user.lua` are built for my specific use case. So it may not be useful for most users.
