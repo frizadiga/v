@@ -1,36 +1,7 @@
 local M = {}
 
 function M.syscall(cmd)
-  return vim.fn.system(cmd):gsub('\n', '')
-end
-
-function M.get_submodule_info(path)
-  local result = {}
-  local submodules = M.syscall({
-    'cd', path, '&&', 'git', 'config', '--file', '.gitmodules', '--get-regexp', 'path'
-  })
-
-  if submodules ~= '' then
-    for line in submodules:gmatch('[^\n]+') do
-      local _, submodule_path = line:match('submodule%.(.-)%.path%s+(.*)')
-      if submodule_path then
-        local full_path = path .. '/' .. submodule_path
-        table.insert(result, {
-          path = submodule_path,
-          full_path = full_path
-        })
-      end
-    end
-  end
-  return result
-end
-
-function M.get_repo_info(path)
-  return {
-    remote = M.syscall('cd ' .. path .. ' && git remote get-url origin'),
-    branch = M.syscall('cd ' .. path .. ' && git branch --show-current'),
-    root = M.syscall('cd ' .. path .. ' && git rev-parse --show-toplevel'),
-  }
+  return vim.fn.system(cmd):gsub('\n$', '') -- only trim trailing newline
 end
 
 function M.get_line_numbers()
@@ -59,6 +30,35 @@ function M.get_line_numbers()
   end
 
   return fmt_line_number
+end
+
+function M.get_repo_info(path)
+  return {
+    remote = M.syscall('cd ' .. path .. ' && git remote get-url origin'),
+    branch = M.syscall('cd ' .. path .. ' && git branch --show-current'),
+    root = M.syscall('cd ' .. path .. ' && git rev-parse --show-toplevel'),
+  }
+end
+
+function M.get_submodule_info(path)
+  local result = {}
+  local submodule_cmd = 'cd ' .. path .. ' && git config --file .gitmodules --get-regexp path'
+  local submodules = M.syscall(submodule_cmd)
+
+  if submodules ~= '' then
+    for line in submodules:gmatch('[^\n]+') do
+      local _, submodule_path = line:match('submodule%.(.-)%.path%s+(.*)')
+      if submodule_path then
+        local full_path = path .. '/' .. submodule_path
+        table.insert(result, {
+          path = submodule_path,
+          full_path = full_path
+        })
+      end
+    end
+  end
+
+  return result
 end
 
 -- @TODO: handle custom remote upstream (non-origin upstream)
