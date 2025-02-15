@@ -59,7 +59,10 @@ vim.keymap.set('v', '<leader>r', ':<C-u>%s/<C-r><C-w>//gc<Left><Left><Left>')
 -- @end search buffer
 
 -- copy to clipboard current file path
-vim.keymap.set('n', '<leader>cp', '<CMD>CopyPath<CR>')
+vim.keymap.set('n', '<leader>cpp', '<CMD>CopyPath<CR>')
+
+-- copy remote url
+vim.keymap.set({ 'n', 'x' }, '<leader>cpr', '<CMD>CopyRemoteUrl<CR>')
 
 -- open quickfix window
 vim.keymap.set('n', '<leader>Oq', '<CMD>copen<CR>')
