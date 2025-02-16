@@ -2,6 +2,7 @@ return {
   {
     -- treesitter based
     'folke/ts-comments.nvim',
+    name = 'treesitter-comments',
     opts = {},
     event = 'VeryLazy',
     -- nowadays v0.10.0 is minimum requirement
@@ -17,7 +18,6 @@ return {
         auto_install = true,
         highlight = { enable = true },
         indent = { enable = true },
-        -- context_commentstring = '',
         context_commentstring = { enable = true, enable_autocmd = false },
       })
     end

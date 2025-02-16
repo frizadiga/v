@@ -59,14 +59,20 @@ function M.get_submodule_info(path)
   return result
 end
 
+--- get git remote URL
 -- @TODO: handle custom remote upstream (non-origin upstream)
-function M.get_git_remote_url()
+--- @param args? {file_path?: string, with_line_numbers?: boolean}
+function M.get_git_remote_url(args)
+  args = args or {}
+  local arg_file_path = args.file_path or ''
+  local arg_with_line_numbers = args.with_line_numbers ~= nil and args.with_line_numbers or true
+
   -- start with the main repository
-  local file_path = vim.fn.expand('%:p')
   local current_path = vim.fn.getcwd()
   local current_repo = M.get_repo_info(current_path)
-  local fmt_line_number = M.get_line_numbers()
   local final_repo = current_repo
+  local file_path = arg_file_path or vim.fn.expand('%:p')
+  local fmt_line_number = arg_with_line_numbers ~= false and '' or M.get_line_numbers()
 
   -- keep track of submodule traversal
   local state_is_submodule_found = true

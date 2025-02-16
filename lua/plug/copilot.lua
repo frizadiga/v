@@ -1,11 +1,13 @@
 return {
   {
     'github/copilot.vim',
+    name = 'copilot',
     -- event = 'InsertEnter', -- load on insert mode
     event = 'VeryLazy', -- load on idle time (after UIEnter)
   },
   {
     'CopilotC-Nvim/CopilotChat.nvim',
+    name = 'copilot-chat',
     event = 'VeryLazy',
     branch = 'main',
     build = 'make tiktoken', -- only on MacOS or Linux

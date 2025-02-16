@@ -4,6 +4,7 @@ return {
   config = function()
     local oil = require('oil')
     local state_detail = false
+    local copy_to_clip = require'shared.clipboard'.copy_to_clip
 
     local keymaps = {
       -- act as enter key
@@ -75,8 +76,25 @@ return {
           local entry = oil.get_cursor_entry()
           local dir_path = oil.get_current_dir()
           -- @NOTE: rm trailing `/..` if it's a directory
+          copy_to_clip((dir_path .. entry.name):gsub('/%..$', ''))
+        end,
+      },
+      ['gcr'] = {
+        desc = 'Oil: Copy file remote url',
+        callback = function()
+          -- local git_remote_url = require'shared.git_remote_url'
+          local entry = oil.get_cursor_entry()
+          local dir_path = oil.get_current_dir()
+          -- @NOTE: rm trailing `/..` if it's a directory
           local final_path = (dir_path .. entry.name):gsub('/%..$', '')
-          require'shared.clipboard'.copy_to_clip(final_path)
+
+          if vim.fn.filereadable(final_path) ~= 1 then
+            vim.notify('Not a file!', vim.log.levels.ERROR, { title = 'Oil' })
+            return
+          end
+
+          copy_to_clip(require'shared.git_remote_url'
+           .get_git_remote_url({ file_path = final_path, with_line_numbers = false }))
         end,
       },
     }
