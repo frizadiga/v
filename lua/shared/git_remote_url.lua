@@ -59,20 +59,49 @@ function M.get_submodule_info(path)
   return result
 end
 
+function M.select_remote_upstream()
+  local git_remote = std.syscall("git remote -v | awk '{print $1}' | sort -u", { trim = false })
+
+  local remotes = {}
+  for remote in git_remote:gmatch("[^\n]+") do
+    table.insert(remotes, remote)
+  end
+
+  if #remotes < 2 then return nil end
+
+  print("\nAvailable remotes:")
+  for i, remote in ipairs(remotes) do
+    print(string.format("%d. %s", i, remote))
+  end
+
+  local choice = vim.fn.input("Select remote number: ")
+  vim.cmd("redraw") -- clear the prompt
+
+  local num = tonumber(choice)
+  if num and num > 0 and num <= #remotes then
+    return remotes[num]
+  end
+
+  return nil
+end
+
 --- get git remote URL
--- @TODO: handle custom remote upstream (non-origin upstream)
 --- @param args? {file_path?: string, with_line_numbers?: boolean}
 function M.get_git_remote_url(args)
   args = args or {}
-  local arg_file_path = args.file_path or ''
-  local arg_with_line_numbers = args.with_line_numbers ~= nil and args.with_line_numbers or true
+  local arg_file_path = args.file_path or nil
+  local arg_with_line_numbers = args.with_line_numbers ~= false
+
+  -- @TODO: cont. handle custom remote upstream (non-origin upstream)
+  local selected_remote_upstream = M.select_remote_upstream()
+  if selected_remote_upstream then vim.notify(selected_remote_upstream) end
 
   -- start with the main repository
   local current_path = vim.fn.getcwd()
   local current_repo = M.get_repo_info(current_path)
   local final_repo = current_repo
   local file_path = arg_file_path or vim.fn.expand('%:p')
-  local fmt_line_number = arg_with_line_numbers ~= false and '' or M.get_line_numbers()
+  local fmt_line_number = arg_with_line_numbers and M.get_line_numbers() or ''
 
   -- keep track of submodule traversal
   local state_is_submodule_found = true
@@ -109,9 +138,8 @@ function M.get_git_remote_url(args)
     remote_url = remote_url:gsub('https://[^@]+@', 'https://')
   end
 
-  local final_url = remote_url .. '/blob/' .. current_branch .. '/' .. relative_file_path .. fmt_line_number
-
-  return final_url
+  -- final URL
+  return remote_url .. '/blob/' .. current_branch .. '/' .. relative_file_path .. fmt_line_number
 end
 
 return M;

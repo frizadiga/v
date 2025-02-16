@@ -1,8 +1,9 @@
 local M = {}
 
-function M.syscall(cmd)
+function M.syscall(cmd, opts)
+  opts = opts or { trim = true }
   -- only trim trailing newline
-  return vim.fn.system(cmd):gsub('\n$', '')
+  return opts.trim and vim.fn.system(cmd):gsub('\n$', '') or vim.fn.system(cmd)
 end
 
 function M.print_reverse_lines(output)

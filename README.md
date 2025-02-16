@@ -1,4 +1,4 @@
-# friz() nvim
+# friz() Text Editor
 My daily use Neovim config.
 
 <!--screenshot image-->
@@ -18,7 +18,7 @@ My daily use Neovim config.
 - nvim source completion: `blink`
 - LLM completion: `copilot x copilot-chat`
 - statusline: `lualine`
-- layout utils: `noice x nui`
+- layout utils & notification finder: `nui x noice`
 
 ## Custom Commands
 Disclaimer: Custom commands in `/cmd/user.lua` are built for my specific use case. So it may not be useful for most users.

@@ -82,7 +82,6 @@ return {
       ['gcr'] = {
         desc = 'Oil: Copy file remote url',
         callback = function()
-          -- local git_remote_url = require'shared.git_remote_url'
           local entry = oil.get_cursor_entry()
           local dir_path = oil.get_current_dir()
           -- @NOTE: rm trailing `/..` if it's a directory
@@ -93,8 +92,8 @@ return {
             return
           end
 
-          copy_to_clip(require'shared.git_remote_url'
-           .get_git_remote_url({ file_path = final_path, with_line_numbers = false }))
+          copy_to_clip(require 'shared.git_remote_url'
+            .get_git_remote_url({ file_path = final_path, with_line_numbers = false }))
         end,
       },
     }
