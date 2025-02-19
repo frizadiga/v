@@ -57,6 +57,16 @@ cmd_user(
   {}
 )
 
+cmd_user(
+  'CopyPathRelative',
+  function()
+    local file_path = vim.fn.expand('%:~:.')
+    local relative_path = vim.fn.fnamemodify(file_path, ':~:.')
+    copy_to_clip(relative_path)
+  end,
+  { desc = 'Copy the current file\'s path (relative to git root) to clipboard' }
+)
+
 -- copy current file name to clipboard
 cmd_user(
   'CopyName',
@@ -162,21 +172,21 @@ cmd_user(
   {}
 )
 
--- info detail ticket
+-- info detail task
 cmd_user(
-  'TicketDetail',
+  'TaskDetail',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
     local output = vim.fn.system({ 'bun', notes_dir .. '/app/tasks/what_task.ts' })
 
-    open_floating_window('# Ticket Detail:\n' .. output, 80, 10)
+    open_floating_window('# Task Detail:\n' .. output, 80, 10)
   end,
   {}
 )
 
--- open ticket markdown
+-- open task markdown
 cmd_user(
-  'TicketMd',
+  'TaskMd',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
     local output = vim.fn.system({ 'bash', notes_dir .. '/projects/products/open-md-product.sh', '--path' })
@@ -195,9 +205,9 @@ cmd_user(
   {}
 )
 
--- open tabs ticket related
+-- open tabs task related
 cmd_user(
-  'TicketTabs',
+  'TaskTabs',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
     local output = vim.fn.system({ 'bash', notes_dir .. '/app/browser-tabs/mod-tabs-by-ticket-id.sh' })

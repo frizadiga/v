@@ -8,19 +8,9 @@ return {
 
     local keymaps = {
       -- act as enter key
-      -- cater memory muscle slip
-      [';'] = {
-        'actions.select',
-        desc = 'Oil: Open file or directory',
-      },
       ['L'] = {
         'actions.select',
         desc = 'Oil: Open file or directory',
-      },
-      -- to cater specific muscle memory case
-      ['<Esc>'] = {
-        desc = 'Oil: Close oil',
-        callback = oil.close,
       },
       ['H'] = {
         'actions.parent',

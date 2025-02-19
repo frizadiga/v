@@ -94,6 +94,7 @@ return {
         }
       })
     end, { desc = 'Grug: Search with current selection' })
+
     vim.keymap.set('n', '<leader>ss', '<CMD>GrugFar<CR>', { desc = 'Grug: Open new search buffer' })
   end
 }
