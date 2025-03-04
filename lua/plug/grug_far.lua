@@ -43,7 +43,7 @@ return {
         -- applyNext = { n = '<localleader>j' },
         -- applyPrev = { n = '<localleader>k' },
         -- Custom keymaps:
-        qflist = { n = 'qq' },
+        qflist = { n = 'qf' },
         historyOpen = { n = 'H' },
       },
       openTargetWindow = {

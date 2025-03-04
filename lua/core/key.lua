@@ -44,9 +44,9 @@ key({ 'n', 'x' }, '<Space><Space>', '<CMD>update<CR>')
 
 -- @start split view
 -- swap split view position
-key('n', '<leader>SS', '<C-w>r')
+key('n', '<leader>SP', '<C-w>r')
 -- switch to other split view
-key('n', '<leader>S', '<C-w><C-w>')
+key('n', '<leader>SS', '<C-w><C-w>')
 -- @end split view
 
 -- @start search buffer

@@ -40,6 +40,14 @@ return {
       ['<C-d>'] = { 'show', 'show_documentation', 'hide_documentation' },
     },
 
+    cmdline = {
+      keymap = {
+        -- recommended, as the default keymap will only show and select the next item
+        ['<Tab>'] = { 'show', 'accept' },
+      },
+      completion = { menu = { auto_show = true } },
+    },
+
     appearance = {
       -- set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
       -- adjusts spacing to ensure icons are aligned
@@ -50,9 +58,9 @@ return {
       use_nvim_cmp_as_default = true,
     },
 
-    -- default list of enabled providers defined so that you can extend it
-    -- elsewhere in your config, without redefining it, due to `opts_extend`
     sources = {
+      -- default list of enabled providers defined so that you can extend it
+      -- elsewhere in your config, without redefining it, due to `opts_extend`
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
   },
