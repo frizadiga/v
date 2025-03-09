@@ -1,5 +1,7 @@
 -- @start create user commands
 
+local std = require'shared.__std'
+
 local float_win = require'shared.float_window'
 local open_floating_window = float_win.open_floating_window
 
@@ -105,6 +107,28 @@ cmd_user(
     local output = vim.fn.system({ 'git', 'log', '--pretty=format:- %h %ad %ae\n  msg: %s', '--date=format:%Y-%m-%d %H:%M' })
 
     open_floating_window('# Git Log:\n' .. output, 60, 20)
+  end,
+  {}
+)
+
+-- run git log for current file
+cmd_user(
+  'GLF',
+  function()
+    local file_path = vim.fn.expand('%:p')
+    local file_dir = vim.fn.fnamemodify(file_path, ':h')
+    local git_root = std.syscall('git -C "' .. file_dir .. '" rev-parse --show-toplevel')
+    local rel_path = std.syscall('git -C "' .. file_dir .. '" ls-files --full-name "' .. file_path .. '"')
+
+    local cmd = string.format(
+      'git -C "%s" log --pretty=format:"- %%h %%ad %%ae%%n  msg: %%s" --date=format:"%%Y-%%m-%%d %%H:%%M" -- "%s"',
+      git_root,
+      rel_path
+    )
+
+    local output = vim.fn.system(cmd)
+
+    open_floating_window('# Git Log File:\n' .. output, 60, 20)
   end,
   {}
 )
