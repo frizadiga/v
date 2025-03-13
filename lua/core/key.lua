@@ -73,6 +73,13 @@ key('n', '<leader>Oq', '<CMD>copen<CR>')
 key("v", "J", ":m '>+1<CR>gv=gv")
 key("v", "K", ":m '<-2<CR>gv=gv")
 
+-- normalize word wrap vertical navigation
+key('n', 'j', "v:count == 0 ? 'gj' : 'j'", { silent = true, expr = true })
+key('n', 'k', "v:count == 0 ? 'gk' : 'k'", { silent = true, expr = true })
+
+key('x', '<leader>p', [["_dP]], { desc = 'Paste without yanking selection' })
+key({'n', 'v'}, '<leader>d', '\"_d', { desc = 'Delete without yanking selection' })
+
 -- @start indentation
 -- basic indentation
 key('n', '<Tab>', '>>')   -- indent right in normal mode
