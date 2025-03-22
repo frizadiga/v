@@ -41,21 +41,22 @@ return {
           reset = {
             normal = '<C-l>', insert = '<C-l>', },
           complete = {
-            insert ='<S-Tab>', -- prevent conflict with copilot ghost suggestion
+            insert = '<S-Tab>', -- prevent conflict with copilot ghost suggestion
             detail = 'Use @<Tab> or /<Tab> for options.',
             -- https://github.com/CopilotC-Nvim/CopilotChat.nvim/issues/324#issuecomment-2118551487
           },
         },
-        agent = 'copilot', -- can be specified manually in prompt via @
+        agent = 'copilot',                   -- can be specified manually in prompt via @
         model = 'claude-3.7-sonnet-thought', -- can be specified manually in prompt via $
-        context = nil, -- default context or array of contexts to use (can be specified manually in prompt via #).
-        temperature = 0.1, -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
+        context = nil,                       -- default context or array of contexts to use (can be specified manually in prompt via #).
+        temperature = 0.1,                   -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
         prompts = {
           -- handle non latin languages
           TransToEn = {
             mapping = '<leader>cct',
-            prompt = 'Translate this to English: ',
-            system_prompt = 'You are very good at translating to English. Please translate the following sentence to English: ',
+            prompt = ' Translate the following text to English:',
+            system_prompt =
+            'You are an expert language translator specializing in accurate translations to English. Preserve the original meaning, tone, and cultural nuances while providing natural, fluent English translations. For idioms or culturally-specific expressions, include brief explanations when necessary.',
           },
         },
         -- default config see: https://github.com/CopilotC-Nvim/CopilotChat.nvim/blob/canary/lua/CopilotChat/config.lua#L81
