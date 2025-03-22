@@ -6,6 +6,31 @@ return {
     event = 'VeryLazy', -- load on idle time (after UIEnter)
   },
   {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    cmd = {
+      "CodeCompanion",
+      "CodeCompanionChat",
+      "CodeCompanionActions",
+      "CodeCompanionCmd",
+    },
+    config = function()
+      require("codecompanion").setup({
+        strategies = {
+          chat = {
+            adapter = "anthropic",
+          },
+          inline = {
+            adapter = "anthropic",
+          },
+        },
+      })
+    end,
+  },
+  {
     'CopilotC-Nvim/CopilotChat.nvim',
     name = 'copilot-chat',
     event = 'VeryLazy',
@@ -41,21 +66,22 @@ return {
           reset = {
             normal = '<C-l>', insert = '<C-l>', },
           complete = {
-            insert ='<S-Tab>', -- prevent conflict with copilot ghost suggestion
+            insert = '<S-Tab>', -- prevent conflict with copilot ghost suggestion
             detail = 'Use @<Tab> or /<Tab> for options.',
             -- https://github.com/CopilotC-Nvim/CopilotChat.nvim/issues/324#issuecomment-2118551487
           },
         },
-        agent = 'copilot', -- can be specified manually in prompt via @
+        agent = 'copilot',                   -- can be specified manually in prompt via @
         model = 'claude-3.7-sonnet-thought', -- can be specified manually in prompt via $
-        context = nil, -- default context or array of contexts to use (can be specified manually in prompt via #).
-        temperature = 0.1, -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
+        context = nil,                       -- default context or array of contexts to use (can be specified manually in prompt via #).
+        temperature = 0.1,                   -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
         prompts = {
           -- handle non latin languages
           TransToEn = {
             mapping = '<leader>cct',
             prompt = 'Translate this to English: ',
-            system_prompt = 'You are very good at translating to English. Please translate the following sentence to English: ',
+            system_prompt =
+            'You are very good at translating to English. Please translate the following sentence to English: ',
           },
         },
         -- default config see: https://github.com/CopilotC-Nvim/CopilotChat.nvim/blob/canary/lua/CopilotChat/config.lua#L81

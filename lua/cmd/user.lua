@@ -37,6 +37,20 @@ cmd_user(
   {}
 )
 
+-- clear shada file
+cmd_user(
+  'ClearShada',
+  function()
+    local shada_file = vim.fn.stdpath('data') .. '/shada/main.shada'
+    local cmd = 'echo "" > ' .. shada_file
+
+    vim.fn.system(cmd)
+  end,
+  {
+    desc = 'Clear shada file'
+  }
+)
+
 -- run todo.sh and print output
 cmd_user(
   'Todo',
@@ -128,7 +142,7 @@ cmd_user(
 
     local output = vim.fn.system(cmd)
 
-    open_floating_window('# Git Log File:\n' .. output, 60, 20)
+    open_floating_window('# Git Log File:\n' .. output, 80, 30)
   end,
   {}
 )
