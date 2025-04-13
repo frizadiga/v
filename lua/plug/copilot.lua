@@ -53,7 +53,7 @@ return {
         prompts = {
           -- handle non latin languages
           TransToEn = {
-            mapping = '<leader>cct',
+            mapping = '<leader>ccl',
             prompt = ' Translate the following text to English:',
             system_prompt =
             'You are an expert language translator specializing in accurate translations to English. Preserve the original meaning, tone, and cultural nuances while providing natural, fluent English translations. For idioms or culturally-specific expressions, include brief explanations when necessary.',

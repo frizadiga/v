@@ -211,15 +211,15 @@ return {
     end, { desc = 'Telescope: Find files cwd' })
 
     -- grep_string
-    vim.keymap.set('n', '<leader>f/', function()
+    vim.keymap.set('n', '<leader>f?', function()
       builtin.grep_string({ search = vim.fn.input("Grep")})
     end, { desc = 'Telescope: Grep string' })
 
     -- grep string - visual mode
-    vim.keymap.set('v', '<leader>f/', find_grep_string, { desc = 'Telescope: Grep string - visual mode' })
+    vim.keymap.set('v', '<leader>f?', find_grep_string, { desc = 'Telescope: Grep string - visual mode' })
 
     -- live_grep active buffer dir
-    vim.keymap.set('n', '<leader>fc', function()
+    vim.keymap.set('n', '<leader>f/', function()
       use_cwd = true
       builtin.live_grep({ prompt_title = 'Live Grep - CWD', cwd = utils.buffer_dir() })
     end, { desc = 'Telescope: Live grep - cwd' })

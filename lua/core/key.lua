@@ -7,6 +7,11 @@ local key = vim.keymap.set
 key('i', 'kj', '<Esc>')
 key('v', 'KJ', '<Esc>')
 
+-- cursor nav
+key('n', '<leader>KJ', 'jzz')
+key('n', '<leader>k', '<C-u>zz')
+key('n', '<leader>j', '<C-d>zz')
+
 -- quit
 key({'n', 'v', 'c'}, '<leader>qq', '<CMD>q<CR>')
 
