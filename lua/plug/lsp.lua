@@ -32,6 +32,7 @@ return {
         'lua_ls',
         'pyright',
         'rust_analyzer',
+        'nginx_language_server',
         -- 'mojo-lsp-server', -- for now manually install, isn't avail via mason yet
       },
     },
@@ -141,6 +142,21 @@ return {
         capabilities = capabilities,
         cmd = { 'mojo-lsp-server' },
         filetypes = { 'mojo', '🔥' },
+      })
+
+      -- nginx
+      lspconfig.nginx_language_server.setup({
+        capabilities = capabilities,
+        cmd = { 'nginx-language-server' },
+        filetypes = { 'nginx' },
+        root_dir = get_git_root,
+          settings = {
+          nginx = {
+            format = {
+              enable = true,
+            }
+          }
+        }
       })
 
       -- more lsp see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
