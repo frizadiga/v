@@ -104,13 +104,13 @@ cmd_auto('FileType', {
   end,
 })
 
-vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+cmd_auto({"BufRead", "BufNewFile"}, {
   pattern = {"*/nginx/*"},
   -- pattern = {"*/nginx/*.conf", "*/etc/nginx/*", "nginx.conf"},
   callback = function() vim.bo.filetype = "nginx" end
 })
 
-vim.api.nvim_create_autocmd("FileType", {
+cmd_auto("FileType", {
   pattern = "nginx",
   callback = function()
     vim.bo.expandtab = true

@@ -66,7 +66,7 @@ key('v', '<leader>r', ':<C-u>%s/<C-r><C-w>//gc<Left><Left><Left>')
 -- @end search buffer
 
 -- copy to clipboard current file path
-key('n', '<leader>cpp', '<CMD>CopyPath<CR>')
+key('n', '<leader>cpp', '<CMD>CopyPathAbsolute<CR>')
 
 -- copy remote url
 key({ 'n', 'x' }, '<leader>cpr', '<CMD>CopyRemoteUrl<CR>')

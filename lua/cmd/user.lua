@@ -13,7 +13,6 @@ local get_git_remote_url = git_remote_url.get_git_remote_url
 
 local cmd_user = vim.api.nvim_create_user_command
 
--- lazy.nvim dashboard alias
 cmd_user(
   'L',
   function(opts)
@@ -21,11 +20,11 @@ cmd_user(
   end,
   {
     nargs = '*',
-    complete = 'custom,v:lua.require("lazy.view").complete'
+    complete = 'custom,v:lua.require("lazy.view").complete',
+    desc = 'Lazy.nvim dashboard'
   }
 )
 
--- run nvim_list_runtime_paths
 cmd_user(
   'RTPList',
   function()
@@ -34,10 +33,11 @@ cmd_user(
 
     open_floating_window('# RTP List:\n \n' .. table.concat(output, '\n'), 80, 30)
   end,
-  {}
+  {
+    desc = 'List nvim runtime paths'
+  }
 )
 
--- clear shada file
 cmd_user(
   'ClearShada',
   function()
@@ -51,7 +51,6 @@ cmd_user(
   }
 )
 
--- run todo.sh and print output
 cmd_user(
   'Todo',
   function()
@@ -60,17 +59,20 @@ cmd_user(
 
     open_floating_window('# Todo:\n' .. output, 80, 15)
   end,
-  {}
+  {
+    desc = 'Run todo.sh'
+  }
 )
 
--- copy current file path to clipboard
 cmd_user(
-  'CopyPath',
+  'CopyPathAbsolute',
   function()
     local file_path = vim.fn.expand('%:p')
     copy_to_clip(file_path)
   end,
-  {}
+  {
+    desc = 'Copy the current file\'s path to clipboard'
+  }
 )
 
 cmd_user(
@@ -80,40 +82,44 @@ cmd_user(
     local relative_path = vim.fn.fnamemodify(file_path, ':~:.')
     copy_to_clip(relative_path)
   end,
-  { desc = 'Copy the current file\'s path (relative to git root) to clipboard' }
+  {
+    desc = 'Copy the current file\'s path (relative to git root) to clipboard'
+  }
 )
 
--- copy current file name to clipboard
 cmd_user(
   'CopyName',
   function()
     local file_name = vim.fn.expand('%:t')
     copy_to_clip(file_name)
   end,
-  {}
+  {
+    desc = 'Copy the current file\'s name to clipboard'
+  }
 )
 
--- copy current directory path to clipboard
 cmd_user(
   'CopyDir',
   function()
     local dir_path = vim.fn.expand('%:p:h')
     copy_to_clip(dir_path)
   end,
-  {}
+  {
+    desc = 'Copy the current directory\'s path to clipboard'
+  }
 )
 
--- copy current filepath in remote url to clipboard
 cmd_user(
   'CopyRemoteUrl',
   function()
     local remote_url = get_git_remote_url()
     copy_to_clip(remote_url)
   end,
-  {}
+  {
+    desc = 'Copy the current file\'s path in remote url to clipboard'
+  }
 )
 
--- run git log
 cmd_user(
   'GL',
   function()
@@ -122,10 +128,36 @@ cmd_user(
 
     open_floating_window('# Git Log:\n' .. output, 60, 20)
   end,
-  {}
+  {
+    desc = 'Show git log in concise format'
+  }
 )
 
--- run git log for current file
+cmd_user(
+  'GitCommitCurrentFile',
+  function()
+    local file_path = vim.fn.expand('%:p')
+    local file_dir = vim.fn.fnamemodify(file_path, ':h')
+    local git_root = std.syscall('git -C "' .. file_dir .. '" rev-parse --show-toplevel')
+    local rel_path = std.syscall('git -C "' .. file_dir .. '" ls-files --full-name "' .. file_path .. '"')
+
+    local cmd = string.format(
+      'git -C "%s" add "%s" && git -C "%s" commit -m "update %s"',
+      git_root,
+      rel_path,
+      git_root,
+      rel_path
+    )
+
+    local output = vim.fn.system(cmd)
+
+    open_floating_window('# Git Add and Commit:\n' .. output, 80, 30)
+  end,
+  {
+    desc = 'Git add and commit current file'
+  }
+)
+
 cmd_user(
   'GLF',
   function()
@@ -144,10 +176,11 @@ cmd_user(
 
     open_floating_window('# Git Log File:\n' .. output, 80, 30)
   end,
-  {}
+  {
+    desc = 'Git history log for current file'
+  }
 )
 
--- new daily open command
 cmd_user(
   'D',
   function()
@@ -165,10 +198,11 @@ cmd_user(
 
     vim.notify('\n' .. output, vim.log.levels.INFO)
   end,
-  {}
+  {
+    desc = 'Create new daily note'
+  }
 )
 
--- daily latest
 cmd_user(
   'DL',
   function()
@@ -186,10 +220,11 @@ cmd_user(
 
     vim.notify('\nfinder latest:\n' .. output, vim.log.levels.INFO)
   end,
-  {}
+  {
+    desc = 'Open latest daily note'
+  }
 )
 
--- daily previous
 cmd_user(
   'DP',
   function()
@@ -207,10 +242,11 @@ cmd_user(
 
     vim.notify('\nfinder previous:\n' .. output, vim.log.levels.INFO)
   end,
-  {}
+  {
+    desc = 'Open previous daily note'
+  }
 )
 
--- info detail task
 cmd_user(
   'TaskDetail',
   function()
@@ -219,12 +255,13 @@ cmd_user(
 
     open_floating_window('# Task Detail:\n' .. output, 80, 10)
   end,
-  {}
+  {
+    desc = 'Show detailed task information'
+  }
 )
 
--- open task markdown
 cmd_user(
-  'TaskMd',
+  'TaskMdOpen',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
     local output = vim.fn.system({ 'bash', notes_dir .. '/projects/products/open-md-product.sh', '--path' })
@@ -240,19 +277,44 @@ cmd_user(
 
     vim.notify('\n' .. output)
   end,
-  {}
+  {
+    desc = 'Open task markdown'
+  }
 )
 
--- open tabs task related
 cmd_user(
-  'TaskTabs',
+  'TaskMdNew',
+  function()
+    local notes_dir = vim.fn.expand('$NOTES_DIR')
+    local output = vim.fn.system({ 'bash', notes_dir .. '/projects/products/new-md-product.sh', '--path' })
+
+    -- get last line of output
+    local lines = vim.fn.split(output, '\n')
+    local md_filepath = vim.fn.trim(lines[#lines])
+
+    -- if md file exists, open it
+    if vim.fn.filereadable(md_filepath) == 1 then
+      vim.cmd('e ' .. md_filepath)
+    end
+
+    vim.notify('\n' .. output)
+  end,
+  {
+    desc = 'Create new task markdown'
+  }
+)
+
+cmd_user(
+  'TaskBrowserTabs',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
     local output = vim.fn.system({ 'bash', notes_dir .. '/app/browser-tabs/mod-tabs-by-ticket-id.sh' })
 
     vim.notify('\n' .. output)
   end,
-  {}
+  {
+    desc = 'Open browser tabs related to task'
+  } 
 )
 
 -- @end create user commands
