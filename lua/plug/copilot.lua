@@ -47,7 +47,7 @@ return {
           },
         },
         agent = 'copilot',                   -- can be specified manually in prompt via @
-        model = 'claude-3.7-sonnet-thought', -- can be specified manually in prompt via $
+        model = 'claude-sonnet-4', -- can be specified manually in prompt via $
         context = nil,                       -- default context or array of contexts to use (can be specified manually in prompt via #).
         temperature = 0.1,                   -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
         prompts = {
