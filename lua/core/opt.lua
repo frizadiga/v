@@ -111,4 +111,7 @@ vim.diagnostic.config({ virtual_text = false })
 -- show line diagnostics automatically in hover window
 vim.opt.updatetime = 250 -- default: 250
 vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
+
+-- set completeopt for better completion experience in v0.11+
+vim.opt.completeopt = { 'menu', 'menuone', 'noselect', 'popup' }
 -- @end lsp

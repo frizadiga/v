@@ -26,6 +26,17 @@ cmd_user(
 )
 
 cmd_user(
+  'Lr',
+  function()
+    local lazy = require'lazy'
+    lazy.restore()
+  end,
+  {
+    desc = 'Restore Lazy.nvim deps from lockfile'
+  }
+)
+
+cmd_user(
   'RTPList',
   function()
     -- get runtime paths as table
