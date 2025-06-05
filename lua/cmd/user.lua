@@ -1,14 +1,14 @@
 -- @start create user commands
 
-local std = require'shared.__std'
+local std = require 'shared.__std'
 
-local float_win = require'shared.float_window'
+local float_win = require 'shared.float_window'
 local open_floating_window = float_win.open_floating_window
 
-local clipboard = require'shared.clipboard'
+local clipboard = require 'shared.clipboard'
 local copy_to_clip = clipboard.copy_to_clip
 
-local git_remote_url = require'shared.git_remote_url'
+local git_remote_url = require 'shared.git_remote_url'
 local get_git_remote_url = git_remote_url.get_git_remote_url
 
 local cmd_user = vim.api.nvim_create_user_command
@@ -28,7 +28,7 @@ cmd_user(
 cmd_user(
   'Lr',
   function()
-    local lazy = require'lazy'
+    local lazy = require 'lazy'
     lazy.restore()
   end,
   {
@@ -135,7 +135,8 @@ cmd_user(
   'GL',
   function()
     -- local output = vim.fn.system({'git', 'log', '--oneline', '--graph', '--decorate', '--all'})
-    local output = vim.fn.system({ 'git', 'log', '--pretty=format:- %h %ad %ae\n  msg: %s', '--date=format:%Y-%m-%d %H:%M' })
+    local output = vim.fn.system({ 'git', 'log', '--pretty=format:- %h %ad %ae\n  msg: %s',
+      '--date=format:%Y-%m-%d %H:%M' })
 
     open_floating_window('# Git Log:\n' .. output, 60, 20)
   end,
@@ -148,21 +149,68 @@ cmd_user(
   'GitCommitCurrentFile',
   function()
     local file_path = vim.fn.expand('%:p')
+    if file_path == '' then
+      print('No file is currently open')
+      return
+    end
+
     local file_dir = vim.fn.fnamemodify(file_path, ':h')
-    local git_root = std.syscall('git -C "' .. file_dir .. '" rev-parse --show-toplevel')
-    local rel_path = std.syscall('git -C "' .. file_dir .. '" ls-files --full-name "' .. file_path .. '"')
 
-    local cmd = string.format(
-      'git -C "%s" add "%s" && git -C "%s" commit -m "update %s"',
-      git_root,
-      rel_path,
-      git_root,
-      rel_path
-    )
+    -- get git root, handle potential errors
+    local git_root_cmd = 'git -C "' .. file_dir .. '" rev-parse --show-toplevel 2>/dev/null'
+    local git_root = std.syscall(git_root_cmd)
 
-    local output = vim.fn.system(cmd)
+    if vim.v.shell_error ~= 0 then
+      print('Not in a git repository')
+      return
+    end
 
-    open_floating_window('# Git Add and Commit:\n' .. output, 80, 30)
+    -- get relative path from git root
+    local rel_path_cmd = string.format('git -C "%s" ls-files --full-name "%s" 2>/dev/null', git_root, file_path)
+    local rel_path = std.syscall(rel_path_cmd)
+
+    -- if file is not tracked by git, use relative path manually
+    if rel_path == '' or vim.v.shell_error ~= 0 then
+      -- calculate relative path manually
+      local git_root_pattern = vim.pesc(git_root .. '/')
+      rel_path = file_path:gsub('^' .. git_root_pattern, '')
+
+      -- verify the file exists relative to git root
+      if vim.fn.filereadable(git_root .. '/' .. rel_path) == 0 then
+        print('File not found in repository: ' .. rel_path)
+        return
+      end
+    end
+
+    -- check if file has changes to commit
+    local status_cmd = string.format('git -C "%s" status --porcelain "%s"', git_root, rel_path)
+    local status_output = std.syscall(status_cmd)
+
+    if status_output == '' then
+      print('No changes to commit for: ' .. rel_path)
+      return
+    end
+
+    -- perform git add and commit
+    local add_cmd = string.format('git -C "%s" add "%s"', git_root, rel_path)
+    local add_output = vim.fn.system(add_cmd)
+
+    if vim.v.shell_error ~= 0 then
+      open_floating_window('# Git Add Failed:\n' .. add_output, 80, 30)
+      return
+    end
+
+    local commit_cmd = string.format('git -C "%s" commit -m "update %s"', git_root, rel_path)
+    local commit_output = vim.fn.system(commit_cmd)
+
+    local result_text = '# Git Add and Commit: ' .. rel_path .. '\n\n'
+    if vim.v.shell_error == 0 then
+      result_text = result_text .. 'SUCCESS!\n\n' .. commit_output
+    else
+      result_text = result_text .. 'COMMIT FAILED!\n\n' .. commit_output
+    end
+
+    open_floating_window(result_text, 80, 30)
   end,
   {
     desc = 'Git add and commit current file'
@@ -173,9 +221,38 @@ cmd_user(
   'GLF',
   function()
     local file_path = vim.fn.expand('%:p')
+    if file_path == '' then
+      print('No file is currently open')
+      return
+    end
+
     local file_dir = vim.fn.fnamemodify(file_path, ':h')
-    local git_root = std.syscall('git -C "' .. file_dir .. '" rev-parse --show-toplevel')
-    local rel_path = std.syscall('git -C "' .. file_dir .. '" ls-files --full-name "' .. file_path .. '"')
+
+    -- get git root, handle potential errors
+    local git_root_cmd = 'git -C "' .. file_dir .. '" rev-parse --show-toplevel 2>/dev/null'
+    local git_root = std.syscall(git_root_cmd)
+
+    if vim.v.shell_error ~= 0 then
+      print('Not in a git repository')
+      return
+    end
+
+    -- get relative path from git root
+    local rel_path_cmd = string.format('git -C "%s" ls-files --full-name "%s" 2>/dev/null', git_root, file_path)
+    local rel_path = std.syscall(rel_path_cmd)
+
+    -- if file is not tracked by git, use relative path manually
+    if rel_path == '' or vim.v.shell_error ~= 0 then
+      -- calculate relative path manually
+      local git_root_pattern = vim.pesc(git_root .. '/')
+      rel_path = file_path:gsub('^' .. git_root_pattern, '')
+
+      -- verify the file exists relative to git root
+      if vim.fn.filereadable(git_root .. '/' .. rel_path) == 0 then
+        print('File is not tracked by git and not found in repository')
+        return
+      end
+    end
 
     local cmd = string.format(
       'git -C "%s" log --pretty=format:"- %%h %%ad %%ae%%n  msg: %%s" --date=format:"%%Y-%%m-%%d %%H:%%M" -- "%s"',
@@ -185,7 +262,12 @@ cmd_user(
 
     local output = vim.fn.system(cmd)
 
-    open_floating_window('# Git Log File:\n' .. output, 80, 30)
+    if vim.v.shell_error ~= 0 or output == '' then
+      print('No git history found for this file')
+      return
+    end
+
+    open_floating_window('# Git Log File: ' .. rel_path .. '\n\n' .. output, 80, 30)
   end,
   {
     desc = 'Git history log for current file'
@@ -325,7 +407,7 @@ cmd_user(
   end,
   {
     desc = 'Open browser tabs related to task'
-  } 
+  }
 )
 
 -- @end create user commands

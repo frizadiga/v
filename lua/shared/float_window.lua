@@ -26,10 +26,7 @@ function M.open_floating_window(buf_body, width, height)
   local col = math.floor((vim.o.columns - final_width) / 2)
 
   -- split the command output into lines
-  local buf_lines = {}
-  for line in buf_body:gmatch("[^\r\n]+") do
-    table.insert(buf_lines, line)
-  end
+  local buf_lines = vim.split(buf_body, '\n', { plain = true })
 
   -- create a new buffer and window
   local buf = vim.api.nvim_create_buf(false, true) -- arg: nofile, scratch buffer
