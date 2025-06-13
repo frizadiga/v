@@ -37,6 +37,32 @@ cmd_user(
 )
 
 cmd_user(
+  'LSP',
+  ':Mason',
+  {
+    desc = 'Open Mason.nvim LSP'
+  }
+)
+
+cmd_user(
+  'SetFiletype',
+  function(opts)
+    local filetype = opts.fargs[1]
+    if filetype == '' then
+      print('No filetype provided')
+      return
+    end
+
+    vim.bo.filetype = filetype
+    print('Filetype set to: ' .. filetype)
+  end,
+  {
+    nargs = 1,
+    desc = 'Set filetype for current buffer'
+  }
+)
+
+cmd_user(
   'RTPList',
   function()
     -- get runtime paths as table
