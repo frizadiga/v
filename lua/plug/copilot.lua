@@ -28,7 +28,7 @@ return {
         error_header = 'Err',
         answer_header = '▶︎ A',
         question_header = '▶︎ Q',
-        separator = '',
+        -- separator = '',
         window = def_win_opt,
         mappings = {
           submit_prompt = {

@@ -60,14 +60,17 @@ return {
       },
       icons = {
         enabled = true,
-        searchInput = '    ',
-        replaceInput = '    ',
-        filesFilterInput = '    ',
-        flagsInput = '  󰮚  ',
-        pathsInput = '    ',
-        resultsEngineLeft = '⚙️',
-        resultsEngineRight = '',
+        -- searchInput = '    ',
+        -- replaceInput = '    ',
+        -- filesFilterInput = '    ',
+        -- flagsInput = '  󰮚  ',
+        -- pathsInput = '    ',
+        -- resultsEngineLeft = '󰒋 ',
+        -- resultsEngineLeft = '',
+        resultsEngineRight = '󰒋 ',
+        resultsEngineLeft = 'Engine: ',
       },
+      -- inputsHighlight = false
     });
 
     vim.keymap.set('n', '<leader>sf', function()
