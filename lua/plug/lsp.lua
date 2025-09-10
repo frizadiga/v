@@ -21,7 +21,7 @@ return {
       auto_install = true,
       ensure_installed = {
         'bashls',
-        'clangd',
+        -- 'clangd', -- exluded to use native binary
         'zls',
         'gopls',
         'html',
@@ -34,6 +34,11 @@ return {
         'rust_analyzer',
         'nginx_language_server',
         -- 'mojo-lsp-server', -- for now manually install, isn't avail via mason yet
+      },
+      servers = {
+        clangd = {
+          mason = false, -- using native binary instead
+        },
       },
     },
   },
@@ -150,7 +155,7 @@ return {
         cmd = { 'nginx-language-server' },
         filetypes = { 'nginx' },
         root_dir = get_git_root,
-          settings = {
+        settings = {
           nginx = {
             format = {
               enable = true,
@@ -169,7 +174,8 @@ return {
       vim.keymap.set('n', '<leader>lD', vim.lsp.buf.declaration, { desc = 'LSP: Go to Declaration' })
       vim.keymap.set('n', '<leader>lr', vim.lsp.buf.references, { desc = 'LSP: Go to References' })
       vim.keymap.set('n', '<leader>la', vim.lsp.buf.code_action, { desc = 'LSP: Select Code Action' })
-      vim.keymap.set('n', '<leader>lc', vim.diagnostic.reset, { desc = 'LSP: Clear all Diagnostics in the current buffer' })
+      vim.keymap.set('n', '<leader>lc', vim.diagnostic.reset,
+        { desc = 'LSP: Clear all Diagnostics in the current buffer' })
     end,
   },
 }

@@ -131,10 +131,10 @@ return {
         layout_strategy = 'vertical',
         layout_config = {
           vertical = {
-            width = 80,
+            width = 70, -- def: 80
             height = 0.9,
-            preview_height = 0.6, -- fraction of total height
-            -- preview_cutoff = 40, -- when columns are less than this value, the preview will be disabled
+            preview_height = 0.55, -- fraction of total height
+            preview_cutoff = 35, -- def: 40 when columns are less than this value, the preview will be disabled
           },
         },
         cache_picker = {
