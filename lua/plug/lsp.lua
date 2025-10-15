@@ -46,112 +46,36 @@ return {
     'neovim/nvim-lspconfig',
     event = 'VeryLazy',
     config = function()
-      local lspconfig = require 'lspconfig'
       local lspconfig_util = require 'lspconfig.util'
-      local capabilities = require 'blink.cmp'.get_lsp_capabilities()
+      local capabilities = require('blink.cmp').get_lsp_capabilities()
 
       local get_git_root = function(fname)
         return lspconfig_util.root_pattern '.git' (fname)
       end
 
-      -- c/c++
-      lspconfig.clangd.setup({
-        capabilities = capabilities,
-      })
+      -- set default capabilities for all servers
+      vim.lsp.config['*'] = { capabilities = capabilities }
 
-      -- zig
-      lspconfig.zls.setup({
-        capabilities = capabilities,
-      })
-
-      -- rust
-      lspconfig.rust_analyzer.setup({
-        capabilities = capabilities,
-      })
-
-      -- bash
-      lspconfig.bashls.setup({
-        capabilities = capabilities
-      })
-
-      -- go
-      lspconfig.gopls.setup({
-        capabilities = capabilities,
-      })
-
-      -- javascript/typescript
-      lspconfig.ts_ls.setup({
-        root_dir = get_git_root,
-        capabilities = capabilities
-      })
-
-      -- eslint
-      lspconfig.eslint.setup({
-        root_dir = get_git_root,
-        capabilities = capabilities
-      })
-
-      -- json
-      lspconfig.jsonls.setup({
-        capabilities = capabilities
-      })
-
-      -- toml
-      lspconfig.taplo.setup({
-        capabilities = capabilities,
-      })
-
-      -- yaml
-      lspconfig.yamlls.setup({
-        capabilities = capabilities,
-        filetypes = { 'yml', 'yaml' }, -- yml is not the default
-      })
-
-      -- html
-      lspconfig.html.setup({
-        capabilities = capabilities
-      })
-
-      -- python
-      lspconfig.pyright.setup({
-        capabilities = capabilities
-      })
-
-      -- lua
-      lspconfig.lua_ls.setup({
+      -- configure servers that need custom settings
+      vim.lsp.config.ts_ls = { root_dir = get_git_root }
+      vim.lsp.config.eslint = { root_dir = get_git_root }
+      vim.lsp.config.lua_ls = {
         settings = {
           Lua = {
             telemetry = { enable = false },
             workspace = {
-              -- disable third-party library check prompt
               checkThirdParty = false,
-              -- add Neovim runtime and config paths to lua_ls workspace
               library = {
                 vim.fn.expand('$VIMRUNTIME/lua'),
                 vim.fn.stdpath('config') .. '/lua'
               }
             },
-            -- @ARCHIVED:
-            -- diagnostics = {
-            --   globals = { 'vim', 'hs', 'ui' }, -- use .luarc.json instead
-            --   disable = { 'missing-fields' }
-            -- },
-            format = { enable = true }, -- @NOTE: decided to use lua_ls instead of stylua
+            format = { enable = true },
           }
         },
-        capabilities = capabilities,
-      })
-
-      -- mojo
-      lspconfig.mojo.setup({
-        capabilities = capabilities,
-        cmd = { 'mojo-lsp-server' },
-        filetypes = { 'mojo', '🔥' },
-      })
-
-      -- nginx
-      lspconfig.nginx_language_server.setup({
-        capabilities = capabilities,
+      }
+      vim.lsp.config.mojo = { cmd = { 'mojo-lsp-server' }, filetypes = { 'mojo', '🔥' } }
+      vim.lsp.config.nginx_language_server = {
         cmd = { 'nginx-language-server' },
         filetypes = { 'nginx' },
         root_dir = get_git_root,
@@ -162,10 +86,31 @@ return {
             }
           }
         }
-      })
+      }
+      vim.lsp.config.yamlls = { filetypes = { 'yml', 'yaml' } }
 
-      -- more lsp see: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+      local servers = {
+        'clangd',
+        'zls',
+        'rust_analyzer',
+        'bashls',
+        'gopls',
+        'ts_ls',
+        'eslint',
+        'jsonls',
+        'taplo',
+        'yamlls',
+        'html',
+        'pyright',
+        'lua_ls',
+        'mojo',
+        'nginx_language_server',
+      }
 
+      -- enable all configured servers
+      vim.lsp.enable(servers)
+
+      -- buffer-specific LSP keymaps
       vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'LSP: Hover' })
       vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format, { desc = 'LSP: Do Format - Current Buffer' })
       vim.keymap.set('x', '<leader>lf', vim.lsp.buf.format, { desc = 'LSP: Do Format - Selected Visual Text' })
