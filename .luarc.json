@@ -1,6 +1,7 @@
 {
   "diagnostics": {
     "globals": [ "vim" ],
-    "disable": [ "missing-fields", "undefined-field", "undefined-doc-name" ]
+    "disable": [ "missing-fields", "undefined-field", "undefined-doc-name",
+            "redundant-return-value" ]
   }
 }

@@ -33,6 +33,7 @@ return {
         'pyright',
         'rust_analyzer',
         'nginx_language_server',
+        'solidity_ls_nomicfoundation',
         -- 'mojo-lsp-server', -- for now manually install, isn't avail via mason yet
       },
       servers = {
@@ -74,7 +75,6 @@ return {
           }
         },
       }
-      vim.lsp.config.mojo = { cmd = { 'mojo-lsp-server' }, filetypes = { 'mojo', '🔥' } }
       vim.lsp.config.nginx_language_server = {
         cmd = { 'nginx-language-server' },
         filetypes = { 'nginx' },
@@ -88,6 +88,16 @@ return {
         }
       }
       vim.lsp.config.yamlls = { filetypes = { 'yml', 'yaml' } }
+      vim.lsp.config.solidity_ls_nomicfoundation = {
+        cmd = {
+          vim.fn.stdpath("data") .. "/mason/bin/nomicfoundation-solidity-language-server",
+          "--stdio"
+        },
+        filetypes = { 'solidity', 'sol' },
+        root_dir = get_git_root,
+      }
+      -- TODO: enable when mojo-lsp-server is available via mason or use clangd approach
+      -- vim.lsp.config.mojo = { cmd = { 'mojo-lsp-server' }, filetypes = { 'mojo', '🔥' } }
 
       local servers = {
         'clangd',
@@ -105,6 +115,7 @@ return {
         'lua_ls',
         'mojo',
         'nginx_language_server',
+        'solidity_ls_nomicfoundation',
       }
 
       -- enable all configured servers
