@@ -301,6 +301,57 @@ cmd_user(
 )
 
 cmd_user(
+  'GitRmCachedCurrentFile',
+  function()
+    local file_path = vim.fn.expand('%:p')
+    if file_path == '' then
+      print('No file is currently open')
+      return
+    end
+    local file_dir = vim.fn.fnamemodify(file_path, ':h')
+    -- get git root, handle potential errors
+    local git_root_cmd = 'git -C "' .. file_dir .. '" rev-parse --show-toplevel 2>/dev/null'
+    local git_root = std.syscall(git_root_cmd)
+    if vim.v.shell_error ~= 0 then
+      print('Not in a git repository')
+      return
+    end
+
+    -- get relative path from git root
+    local rel_path_cmd = string.format('git -C "%s" ls-files --full-name "%s" 2>/dev/null', git_root, file_path)
+    local rel_path = std.syscall(rel_path_cmd)
+
+    -- if file is not tracked by git, use relative path manually
+    if rel_path == '' or vim.v.shell_error ~= 0 then
+      -- calculate relative path manually
+      local git_root_pattern = vim.pesc(git_root .. '/')
+      rel_path = file_path:gsub('^' .. git_root_pattern, '')
+
+      -- verify the file exists relative to git root
+      if vim.fn.filereadable(git_root .. '/' .. rel_path) == 0 then
+        print('File not found in repository: ' .. rel_path)
+        return
+      end
+    end
+
+    -- perform git rm --cached
+    local rm_cmd = string.format('git -C "%s" rm -rf --cached "%s"', git_root, rel_path)
+    local rm_output = vim.fn.system(rm_cmd)
+    local result_text = '# Git Rm Cached Current File: ' .. rel_path .. '\n\n'
+
+    if vim.v.shell_error == 0 then
+      result_text = result_text .. 'SUCCESS!\n\n' .. rm_output
+    else
+      result_text = result_text .. 'GIT RM CACHED FAILED!\n\n' .. rm_output
+    end
+    open_floating_window(result_text, 80, 10)
+  end,
+  {
+    desc = 'Git rm -rf --cached current file'
+  }
+)
+
+cmd_user(
   'D',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
