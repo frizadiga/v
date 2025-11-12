@@ -352,6 +352,27 @@ cmd_user(
 )
 
 cmd_user(
+  'MakeExecutable',
+  function()
+    local file_path = vim.fn.expand('%:p')
+    if file_path == '' then
+      print('No file is currently open')
+      return
+    end
+    local cmd = 'chmod +x "' .. file_path .. '"'
+    vim.fn.system(cmd)
+    if vim.v.shell_error == 0 then
+      print('Made executable: ' .. file_path)
+    else
+      print('Failed to make executable: ' .. file_path)
+    end
+  end,
+  {
+    desc = 'Make current file executable'
+  }
+)
+
+cmd_user(
   'D',
   function()
     local notes_dir = vim.fn.expand('$NOTES_DIR')
