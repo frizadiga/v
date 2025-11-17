@@ -508,4 +508,26 @@ cmd_user(
   }
 )
 
+cmd_user(
+  'T',
+  function()
+    local money_dir = vim.fn.expand('$MONEY_DIR')
+    local output = vim.fn.system({ 'bash', money_dir .. '/trading-tools/new-daily-trading-journal.sh' })
+
+    -- get last line of output
+    local lines = vim.fn.split(output, '\n')
+    local tj_filepath = vim.fn.trim(lines[#lines])
+
+    -- if tj file exists, open it
+    if vim.fn.filereadable(tj_filepath) == 1 then
+      vim.cmd('e ' .. tj_filepath)
+    end
+
+    vim.notify('\n' .. output)
+  end,
+  {
+    desc = 'Create new trading journal note'
+  }
+)
+
 -- @end create user commands
