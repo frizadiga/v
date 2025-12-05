@@ -512,7 +512,7 @@ cmd_user(
   'T',
   function()
     local money_dir = vim.fn.expand('$MONEY_DIR')
-    local output = vim.fn.system({ 'bash', money_dir .. '/trading-tools/new-daily-trading-journal.sh' })
+    local output = vim.fn.system({ 'bash', money_dir .. '/trading-journal/trading-journal-tools/new-daily-trading-journal.sh' })
 
     -- get last line of output
     local lines = vim.fn.split(output, '\n')
