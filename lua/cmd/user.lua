@@ -172,6 +172,16 @@ cmd_user(
 )
 
 cmd_user(
+  'CF',
+  function()
+    vim.cmd('GitCommitCurrentFile')
+  end,
+  {
+    desc = 'Alias for GitCommitCurrentFile'
+  }
+)
+
+cmd_user(
   'GitCommitCurrentFile',
   function()
     local file_path = vim.fn.expand('%:p')
