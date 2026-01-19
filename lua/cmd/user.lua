@@ -520,9 +520,15 @@ cmd_user(
 
 cmd_user(
   'T',
-  function()
+  function(opts)
     local money_dir = vim.fn.expand('$MONEY_DIR')
-    local output = vim.fn.system({ 'bash', money_dir .. '/trading-journal/trading-journal-tools/new-daily-trading-journal.sh' })
+    local cmd = { 'bash', money_dir .. '/trading-journal/trading-journal-tools/new-daily-trading-journal.sh' }
+
+    if opts.args ~= '' then
+      table.insert(cmd, opts.args)
+    end
+
+    local output = vim.fn.system(cmd)
 
     -- get last line of output
     local lines = vim.fn.split(output, '\n')
@@ -536,8 +542,10 @@ cmd_user(
     vim.notify('\n' .. output)
   end,
   {
+    nargs = '*',
     desc = 'Create new trading journal note'
   }
 )
+
 
 -- @end create user commands
