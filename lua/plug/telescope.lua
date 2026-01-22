@@ -124,6 +124,7 @@ return {
         preview = {
           timeout = 50, -- ms #performance improvement
           filesize_limit = 1, -- MB #performance improvement
+          treesitter = false, -- disable treesitter for preview
         },
         path_display = { 'truncate' },
         prompt_prefix = ' ▶ ',
