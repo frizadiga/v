@@ -1,8 +1,8 @@
 return {
   'nvim-telescope/telescope.nvim',
   event = 'VeryLazy',
-  branch = '0.1.x', -- stable
-  -- branch = 'master', -- latest (currently still broken)
+  -- branch = '0.1.x', -- stable
+  branch = 'master', -- latest (currently still broken)
   dependencies = {
     'nvim-telescope/telescope-ui-select.nvim', -- for lsp code actions
     {

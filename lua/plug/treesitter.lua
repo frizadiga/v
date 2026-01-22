@@ -17,7 +17,7 @@ return {
         auto_install = true,
         highlight = { enable = true },
         indent = { enable = true },
-        -- context_commentstring = { enable = true, enable_autocmd = false },
+        context_commentstring = { enable = true, enable_autocmd = false },
       })
     end
   }
