@@ -61,6 +61,16 @@ return {
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       default = { 'lsp', 'path', 'snippets', 'buffer' },
     },
+    completion = {
+      menu = {
+        draw = {
+          columns = {
+            { 'label', 'label_description', gap = 1 },
+            { 'kind' } -- hide 'kind_icon', only show text (fix goddamn misrender artifact)
+          },
+        },
+      },
+    },
   },
   opts_extend = { 'sources.default' }
 }

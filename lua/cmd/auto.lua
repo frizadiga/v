@@ -104,8 +104,8 @@ cmd_auto('FileType', {
   end,
 })
 
-cmd_auto({"BufRead", "BufNewFile"}, {
-  pattern = {"*/nginx/*"},
+cmd_auto({ "BufRead", "BufNewFile" }, {
+  pattern = { "*/nginx/*" },
   -- pattern = {"*/nginx/*.conf", "*/etc/nginx/*", "nginx.conf"},
   callback = function() vim.bo.filetype = "nginx" end
 })
