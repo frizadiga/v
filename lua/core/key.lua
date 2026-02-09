@@ -13,7 +13,7 @@ key('n', '<leader>k', '<C-u>zz')
 key('n', '<leader>j', '<C-d>zz')
 
 -- quit
-key({'n', 'v', 'c'}, '<leader>qq', '<CMD>q<CR>')
+key({ 'n', 'v', 'c' }, '<leader>qq', '<CMD>q<CR>')
 
 -- redo
 key('n', 'r', '<C-r>')
@@ -83,7 +83,7 @@ key('n', 'j', "v:count == 0 ? 'gj' : 'j'", { silent = true, expr = true })
 key('n', 'k', "v:count == 0 ? 'gk' : 'k'", { silent = true, expr = true })
 
 key('x', '<leader>p', [["_dP]], { desc = 'Paste without yanking selection' })
-key({'n', 'v'}, '<leader>d', '\"_d', { desc = 'Delete without yanking selection' })
+key({ 'n', 'v' }, '<leader>d', '\"_d', { desc = 'Delete without yanking selection' })
 
 -- @start indentation
 -- basic indentation
@@ -108,3 +108,10 @@ key('n', '<leader>i', 'gg=G<C-o>', { desc = 'Fix indentation for entire file' })
 
 -- add workspace folder
 -- key('n', '<leader>awf', vim.lsp.buf.add_workspace_folder)
+
+-- fix clipboard pasting on windows (remove carriage return characters)
+vim.keymap.set({ 'n', 'v' }, 'p', function()
+  local content = vim.fn.getreg('+')
+  vim.fn.setreg('+', content:gsub('\r', ''))
+  return 'p'
+end, { expr = true })

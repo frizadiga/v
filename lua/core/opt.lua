@@ -115,3 +115,7 @@ vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {f
 -- set completeopt for better completion experience in v0.11+
 vim.opt.completeopt = { 'menu', 'menuone', 'noselect', 'popup' }
 -- @end lsp
+
+-- set fileformats and fileformat
+vim.opt.fileformats = { "unix", "dos" }
+vim.opt.fileformat = "unix"
