@@ -110,7 +110,7 @@ key('n', '<leader>i', 'gg=G<C-o>', { desc = 'Fix indentation for entire file' })
 -- key('n', '<leader>awf', vim.lsp.buf.add_workspace_folder)
 
 -- fix clipboard pasting on windows (remove carriage return characters)
-vim.keymap.set({ 'n', 'v' }, 'p', function()
+key({ 'n', 'v' }, 'p', function()
   local content = vim.fn.getreg('+')
   vim.fn.setreg('+', content:gsub('\r', ''))
   return 'p'
