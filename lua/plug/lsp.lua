@@ -21,6 +21,7 @@ return {
       auto_install = true,
       ensure_installed = {
         'bashls',
+        'powershell_es',
         -- 'clangd', -- exluded to use native binary
         'zls',
         'gopls',
