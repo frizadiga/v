@@ -118,4 +118,14 @@ cmd_auto("FileType", {
     vim.bo.shiftwidth = 2
   end
 })
+
+cmd_auto("BufEnter", {
+  pattern = "oil://*",
+  callback = function()
+    if vim.bo.filetype ~= "oil" then
+      vim.bo.filetype = "oil"
+      require('oil').discard_all_changes()
+    end
+  end,
+})
 -- @end_section fmt-lang-config

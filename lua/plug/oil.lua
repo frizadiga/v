@@ -4,7 +4,7 @@ return {
   config = function()
     local oil = require('oil')
     local state_detail = false
-    local copy_to_clip = require'shared.clipboard'.copy_to_clip
+    local copy_to_clip = require 'shared.clipboard'.copy_to_clip
 
     local keymaps = {
       -- act as enter key
@@ -86,9 +86,20 @@ return {
             .get_git_remote_url({ file_path = final_path, with_line_numbers = false }))
         end,
       },
+      -- just in case BufEnter approach not applied
+      ['gr'] = {
+        desc = 'Oil: Force fix filetype and conceal',
+        callback = function()
+          vim.bo.filetype = 'oil'
+          -- correct function to reset the buffer state
+          require('oil').discard_all_changes()
+          vim.notify("Oil: Filetype and conceal forced", vim.log.levels.INFO)
+        end,
+      },
     }
 
     local def_opt = {
+      constrain_cursor = "name",
       keymaps = keymaps,
       columns = { 'icon' }, -- see :help oil-columns
       view_options = {
