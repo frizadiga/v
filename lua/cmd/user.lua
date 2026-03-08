@@ -58,6 +58,9 @@ cmd_user(
   end,
   {
     nargs = 1,
+    complete = function(arglead)
+      return vim.fn.getcompletion(arglead, 'filetype')
+    end,
     desc = 'Set filetype for current buffer'
   }
 )

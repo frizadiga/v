@@ -2,7 +2,7 @@ return {
   'nvim-telescope/telescope.nvim',
   event = 'VeryLazy',
   -- branch = '0.1.x', -- stable
-  branch = 'master', -- latest (currently still broken)
+  branch = 'master',                           -- latest (currently still broken)
   dependencies = {
     'nvim-telescope/telescope-ui-select.nvim', -- for lsp code actions
     {
@@ -24,7 +24,7 @@ return {
 
     -- fn: find grep string from visual mode
     local function find_grep_string()
-      vim.cmd('normal! y') -- copy visual selection to clipboard
+      vim.cmd('normal! y')                                         -- copy visual selection to clipboard
       local selection_text = vim.fn.getreg('0'):gsub('[\n\r]', '') -- get most recently yanked value and rm newlines
       builtin.grep_string({ search = selection_text })
     end
@@ -36,7 +36,7 @@ return {
     end
 
     -- @start_section oldfiles + fzf files
-    -- usecase: 
+    -- usecase:
     -- 1. open telescope oldfiles
     -- 2. find a file
     -- 3. if no files found, press enter to open fzf files
@@ -122,7 +122,7 @@ return {
           },
         },
         preview = {
-          timeout = 50, -- ms #performance improvement
+          timeout = 50,       -- ms #performance improvement
           filesize_limit = 1, -- MB #performance improvement
           treesitter = false, -- disable treesitter for preview
         },
@@ -132,17 +132,17 @@ return {
         layout_strategy = 'vertical',
         layout_config = {
           vertical = {
-            width = 70, -- def: 80
+            width = 70,            -- def: 80
             height = 0.9,
             preview_height = 0.55, -- fraction of total height
-            preview_cutoff = 25, -- def: 35 when rows are less than this value, the preview will be disabled
+            preview_cutoff = 25,   -- def: 35 when rows are less than this value, the preview will be disabled
           },
         },
         cache_picker = {
-          num_pickers = 5, -- #performance improvement
-          limit_entries = 1000, -- #performance improvement
+          num_pickers = 5,                                  -- #performance improvement
+          limit_entries = 1000,                             -- #performance improvement
         },
-        file_ignore_patterns = {"%.git/", "node_modules/"}, -- #performance improvement
+        file_ignore_patterns = { "%.git/", "node_modules/" }, -- #performance improvement
       },
       -- @end_section default
 
@@ -171,7 +171,7 @@ return {
           follow = true,
           mappings = { i = { ['<CR>'] = find_files } },
           prompt_title = '[DONT - USE OLDFILES INSTEAD] - Find Files - Entire Project',
-          find_command = {'fd', '--type', 'f', '--strip-cwd-prefix'}, -- #performance improvement
+          find_command = { 'fd', '--type', 'f', '--strip-cwd-prefix' }, -- #performance improvement
         },
       },
       -- @end_section pickers
@@ -200,7 +200,7 @@ return {
     -- find recently opened files -- visual mode
     vim.keymap.set('v', ';', function()
       use_cwd = false
-      vim.cmd('normal! y') -- copy visual selection to clipboard
+      vim.cmd('normal! y')                                         -- copy visual selection to clipboard
       local selection_text = vim.fn.getreg('0'):gsub('[\n\r]', '') -- remove newlines
       builtin.oldfiles({ default_text = selection_text })
     end, { desc = 'Telescope: Oldfiles (Recent Files) - visual mode' })
@@ -213,7 +213,7 @@ return {
 
     -- grep_string
     vim.keymap.set('n', '<leader>f?', function()
-      builtin.grep_string({ search = vim.fn.input("Grep")})
+      builtin.grep_string({ search = vim.fn.input("Grep") })
     end, { desc = 'Telescope: Grep string' })
 
     -- grep string - visual mode
@@ -242,6 +242,31 @@ return {
 
     -- builtins
     vim.keymap.set('n', '<leader>fl', builtin.builtin, { desc = 'Telescope: Builtin' })
+
+    -- set filetype/language picker
+    vim.keymap.set('n', '<leader>ft', function()
+      local pickers = require('telescope.pickers')
+      local finders = require('telescope.finders')
+      local conf = require('telescope.config').values
+      local filetypes = vim.fn.getcompletion('', 'filetype')
+      local target_buf = vim.api.nvim_get_current_buf()
+
+      pickers.new(require('telescope.themes').get_dropdown({ previewer = false }), {
+        prompt_title = 'Set Language Mode',
+        finder = finders.new_table { results = filetypes },
+        sorter = conf.generic_sorter({}),
+        attach_mappings = function(prompt_bufnr)
+          actions.select_default:replace(function()
+            local sel = action_state.get_selected_entry()
+            actions.close(prompt_bufnr)
+            if sel then
+              vim.bo[target_buf].filetype = sel[1]
+            end
+          end)
+          return true
+        end,
+      }):find()
+    end, { desc = 'Telescope: Set language mode' })
 
     -- marks
     vim.keymap.set('n', '<leader>fm', builtin.marks, { desc = 'Telescope: Marks' })
