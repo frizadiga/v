@@ -22,13 +22,14 @@ return {
           state_detail = not state_detail
           if state_detail then
             oil.set_columns({
-              'icon',
+              -- 'icon',
               'permissions',
               'size',
               'mtime'
             })
           else
-            oil.set_columns({ 'icon' })
+            oil.set_columns({})
+            -- oil.set_columns({ 'icon' })
           end
         end,
       },
@@ -101,7 +102,8 @@ return {
     local def_opt = {
       constrain_cursor = "name",
       keymaps = keymaps,
-      columns = { 'icon' }, -- see :help oil-columns
+      columns = {}, -- see :help oil-columns
+      -- columns = { 'icon' }, -- see :help oil-columns
       view_options = {
         -- show files and directories that start with '.'
         show_hidden = true,

@@ -1,23 +1,14 @@
 -- @start create user commands
 
-local std = require 'shared.__std'
-
-local float_win = require 'shared.float_window'
-local open_floating_window = float_win.open_floating_window
-
-local clipboard = require 'shared.clipboard'
-local copy_to_clip = clipboard.copy_to_clip
-
-local git_remote_url = require 'shared.git_remote_url'
-local get_git_remote_url = git_remote_url.get_git_remote_url
+local set_filetype = require 'cmd.actions.set_filetype'
+local git_commit_current_file_float =
+  require('cmd.actions.git_commit_current_file_float').git_commit_current_file_float
 
 local cmd_user = vim.api.nvim_create_user_command
 
 cmd_user(
   'L',
-  function(opts)
-    vim.cmd('Lazy ' .. opts.args)
-  end,
+  require('cmd.actions.lazy_command').lazy_command,
   {
     nargs = '*',
     complete = 'custom,v:lua.require("lazy.view").complete',
@@ -27,10 +18,7 @@ cmd_user(
 
 cmd_user(
   'Lr',
-  function()
-    local lazy = require 'lazy'
-    lazy.restore()
-  end,
+  require('cmd.actions.lazy_restore').lazy_restore,
   {
     desc = 'Restore Lazy.nvim deps from lockfile'
   }
@@ -46,33 +34,17 @@ cmd_user(
 
 cmd_user(
   'SetFiletype',
-  function(opts)
-    local filetype = opts.fargs[1]
-    if filetype == '' then
-      print('No filetype provided')
-      return
-    end
-
-    vim.bo.filetype = filetype
-    print('Filetype set to: ' .. filetype)
-  end,
+  set_filetype.set_filetype,
   {
     nargs = 1,
-    complete = function(arglead)
-      return vim.fn.getcompletion(arglead, 'filetype')
-    end,
+    complete = set_filetype.complete_filetype,
     desc = 'Set filetype for current buffer'
   }
 )
 
 cmd_user(
   'RTPList',
-  function()
-    -- get runtime paths as table
-    local output = vim.api.nvim_list_runtime_paths()
-
-    open_floating_window('# RTP List:\n \n' .. table.concat(output, '\n'), 80, 30)
-  end,
+  require('cmd.actions.runtime_path_list').runtime_path_list,
   {
     desc = 'List nvim runtime paths'
   }
@@ -80,12 +52,7 @@ cmd_user(
 
 cmd_user(
   'ClearShada',
-  function()
-    local shada_file = vim.fn.stdpath('data') .. '/shada/main.shada'
-    local cmd = 'echo "" > ' .. shada_file
-
-    vim.fn.system(cmd)
-  end,
+  require('cmd.actions.clear_shada').clear_shada,
   {
     desc = 'Clear shada file'
   }
@@ -93,12 +60,7 @@ cmd_user(
 
 cmd_user(
   'Todo',
-  function()
-    local tools_dir = vim.fn.expand('$TOOLS_DIR')
-    local output = vim.fn.system({ 'bash', tools_dir .. '/todo.sh' })
-
-    open_floating_window('# Todo:\n' .. output, 80, 15)
-  end,
+  require('cmd.actions.todo_command').todo_command,
   {
     desc = 'Run todo.sh'
   }
@@ -106,10 +68,7 @@ cmd_user(
 
 cmd_user(
   'CopyPathAbsolute',
-  function()
-    local file_path = vim.fn.expand('%:p')
-    copy_to_clip(file_path)
-  end,
+  require('cmd.actions.copy_path_absolute').copy_path_absolute,
   {
     desc = 'Copy the current file\'s path to clipboard'
   }
@@ -117,11 +76,7 @@ cmd_user(
 
 cmd_user(
   'CopyPathRelative',
-  function()
-    local file_path = vim.fn.expand('%:~:.')
-    local relative_path = vim.fn.fnamemodify(file_path, ':~:.')
-    copy_to_clip(relative_path)
-  end,
+  require('cmd.actions.copy_path_relative').copy_path_relative,
   {
     desc = 'Copy the current file\'s path (relative to git root) to clipboard'
   }
@@ -129,10 +84,7 @@ cmd_user(
 
 cmd_user(
   'CopyName',
-  function()
-    local file_name = vim.fn.expand('%:t')
-    copy_to_clip(file_name)
-  end,
+  require('cmd.actions.copy_name').copy_name,
   {
     desc = 'Copy the current file\'s name to clipboard'
   }
@@ -140,10 +92,7 @@ cmd_user(
 
 cmd_user(
   'CopyDir',
-  function()
-    local dir_path = vim.fn.expand('%:p:h')
-    copy_to_clip(dir_path)
-  end,
+  require('cmd.actions.copy_dir').copy_dir,
   {
     desc = 'Copy the current directory\'s path to clipboard'
   }
@@ -151,10 +100,7 @@ cmd_user(
 
 cmd_user(
   'CopyRemoteUrl',
-  function()
-    local remote_url = get_git_remote_url()
-    copy_to_clip(remote_url)
-  end,
+  require('cmd.actions.copy_remote_url').copy_remote_url,
   {
     desc = 'Copy the current file\'s path in remote url to clipboard'
   }
@@ -162,13 +108,7 @@ cmd_user(
 
 cmd_user(
   'GL',
-  function()
-    -- local output = vim.fn.system({'git', 'log', '--oneline', '--graph', '--decorate', '--all'})
-    local output = vim.fn.system({ 'git', 'log', '--pretty=format:- %h %ad %ae\n  msg: %s',
-      '--date=format:%Y-%m-%d %H:%M' })
-
-    open_floating_window('# Git Log:\n' .. output, 60, 20)
-  end,
+  require('cmd.actions.git_log').git_log,
   {
     desc = 'Show git log in concise format'
   }
@@ -176,138 +116,42 @@ cmd_user(
 
 cmd_user(
   'CF',
-  function()
-    vim.cmd('GitCommitCurrentFile')
-  end,
+  require('cmd.actions.git_commit_current_file_notify').git_commit_current_file_notify,
   {
-    desc = 'Alias for GitCommitCurrentFile'
+    desc = 'Git add and commit current file with notification'
   }
 )
 
 cmd_user(
-  'GitCommitCurrentFile',
-  function()
-    local file_path = vim.fn.expand('%:p')
-    if file_path == '' then
-      print('No file is currently open')
-      return
-    end
-
-    local file_dir = vim.fn.fnamemodify(file_path, ':h')
-
-    -- get git root, handle potential errors
-    local git_root_cmd = 'git -C "' .. file_dir .. '" rev-parse --show-toplevel 2>/dev/null'
-    local git_root = std.syscall(git_root_cmd)
-
-    if vim.v.shell_error ~= 0 then
-      print('Not in a git repository')
-      return
-    end
-
-    -- get relative path from git root
-    local rel_path_cmd = string.format('git -C "%s" ls-files --full-name "%s" 2>/dev/null', git_root, file_path)
-    local rel_path = std.syscall(rel_path_cmd)
-
-    -- if file is not tracked by git, use relative path manually
-    if rel_path == '' or vim.v.shell_error ~= 0 then
-      -- calculate relative path manually
-      local git_root_pattern = vim.pesc(git_root .. '/')
-      rel_path = file_path:gsub('^' .. git_root_pattern, '')
-
-      -- verify the file exists relative to git root
-      if vim.fn.filereadable(git_root .. '/' .. rel_path) == 0 then
-        print('File not found in repository: ' .. rel_path)
-        return
-      end
-    end
-
-    -- check if file has changes to commit
-    local status_cmd = string.format('git -C "%s" status --porcelain "%s"', git_root, rel_path)
-    local status_output = std.syscall(status_cmd)
-
-    if status_output == '' then
-      print('No changes to commit for: ' .. rel_path)
-      return
-    end
-
-    -- perform git add and commit
-    local add_cmd = string.format('git -C "%s" add "%s"', git_root, rel_path)
-    local add_output = vim.fn.system(add_cmd)
-
-    if vim.v.shell_error ~= 0 then
-      open_floating_window('# Git Add Failed:\n' .. add_output, 80, 30)
-      return
-    end
-
-    local commit_cmd = string.format('git -C "%s" commit -m "update %s"', git_root, rel_path)
-    local commit_output = vim.fn.system(commit_cmd)
-
-    local result_text = '# Git Add and Commit: ' .. rel_path .. '\n\n'
-    if vim.v.shell_error == 0 then
-      result_text = result_text .. 'SUCCESS!\n\n' .. commit_output
-    else
-      result_text = result_text .. 'COMMIT FAILED!\n\n' .. commit_output
-    end
-
-    open_floating_window(result_text, 80, 30)
-  end,
+  'RF',
+  require('shared.git_soft_reset_last_commit').git_soft_reset_last_commit,
   {
-    desc = 'Git add and commit current file'
+    desc = 'Git soft reset the latest commit'
   }
 )
+
+for _, git_commit_float_cmd in ipairs({
+  {
+    name = 'CFF',
+    desc = 'Alias to GitCommitCurrentFile',
+  },
+  {
+    name = 'GitCommitCurrentFile',
+    desc = 'Git add and commit current file in floating window',
+  },
+}) do
+  cmd_user(
+    git_commit_float_cmd.name,
+    git_commit_current_file_float,
+    {
+      desc = git_commit_float_cmd.desc
+    }
+  )
+end
 
 cmd_user(
   'GLF',
-  function()
-    local file_path = vim.fn.expand('%:p')
-    if file_path == '' then
-      print('No file is currently open')
-      return
-    end
-
-    local file_dir = vim.fn.fnamemodify(file_path, ':h')
-
-    -- get git root, handle potential errors
-    local git_root_cmd = 'git -C "' .. file_dir .. '" rev-parse --show-toplevel 2>/dev/null'
-    local git_root = std.syscall(git_root_cmd)
-
-    if vim.v.shell_error ~= 0 then
-      print('Not in a git repository')
-      return
-    end
-
-    -- get relative path from git root
-    local rel_path_cmd = string.format('git -C "%s" ls-files --full-name "%s" 2>/dev/null', git_root, file_path)
-    local rel_path = std.syscall(rel_path_cmd)
-
-    -- if file is not tracked by git, use relative path manually
-    if rel_path == '' or vim.v.shell_error ~= 0 then
-      -- calculate relative path manually
-      local git_root_pattern = vim.pesc(git_root .. '/')
-      rel_path = file_path:gsub('^' .. git_root_pattern, '')
-
-      -- verify the file exists relative to git root
-      if vim.fn.filereadable(git_root .. '/' .. rel_path) == 0 then
-        print('File is not tracked by git and not found in repository')
-        return
-      end
-    end
-
-    local cmd = string.format(
-      'git -C "%s" log --pretty=format:"- %%h %%ad %%ae%%n  msg: %%s" --date=format:"%%Y-%%m-%%d %%H:%%M" -- "%s"',
-      git_root,
-      rel_path
-    )
-
-    local output = vim.fn.system(cmd)
-
-    if vim.v.shell_error ~= 0 or output == '' then
-      print('No git history found for this file')
-      return
-    end
-
-    open_floating_window('# Git Log File: ' .. rel_path .. '\n\n' .. output, 80, 30)
-  end,
+  require('shared.git_log_current_file').git_log_current_file,
   {
     desc = 'Git history log for current file'
   }
@@ -315,50 +159,7 @@ cmd_user(
 
 cmd_user(
   'GitRmCachedCurrentFile',
-  function()
-    local file_path = vim.fn.expand('%:p')
-    if file_path == '' then
-      print('No file is currently open')
-      return
-    end
-    local file_dir = vim.fn.fnamemodify(file_path, ':h')
-    -- get git root, handle potential errors
-    local git_root_cmd = 'git -C "' .. file_dir .. '" rev-parse --show-toplevel 2>/dev/null'
-    local git_root = std.syscall(git_root_cmd)
-    if vim.v.shell_error ~= 0 then
-      print('Not in a git repository')
-      return
-    end
-
-    -- get relative path from git root
-    local rel_path_cmd = string.format('git -C "%s" ls-files --full-name "%s" 2>/dev/null', git_root, file_path)
-    local rel_path = std.syscall(rel_path_cmd)
-
-    -- if file is not tracked by git, use relative path manually
-    if rel_path == '' or vim.v.shell_error ~= 0 then
-      -- calculate relative path manually
-      local git_root_pattern = vim.pesc(git_root .. '/')
-      rel_path = file_path:gsub('^' .. git_root_pattern, '')
-
-      -- verify the file exists relative to git root
-      if vim.fn.filereadable(git_root .. '/' .. rel_path) == 0 then
-        print('File not found in repository: ' .. rel_path)
-        return
-      end
-    end
-
-    -- perform git rm --cached
-    local rm_cmd = string.format('git -C "%s" rm -rf --cached "%s"', git_root, rel_path)
-    local rm_output = vim.fn.system(rm_cmd)
-    local result_text = '# Git Rm Cached Current File: ' .. rel_path .. '\n\n'
-
-    if vim.v.shell_error == 0 then
-      result_text = result_text .. 'SUCCESS!\n\n' .. rm_output
-    else
-      result_text = result_text .. 'GIT RM CACHED FAILED!\n\n' .. rm_output
-    end
-    open_floating_window(result_text, 80, 10)
-  end,
+  require('shared.git_rm_cached_current_file').git_rm_cached_current_file,
   {
     desc = 'Git rm -rf --cached current file'
   }
@@ -366,20 +167,7 @@ cmd_user(
 
 cmd_user(
   'MakeExecutable',
-  function()
-    local file_path = vim.fn.expand('%:p')
-    if file_path == '' then
-      print('No file is currently open')
-      return
-    end
-    local cmd = 'chmod +x "' .. file_path .. '"'
-    vim.fn.system(cmd)
-    if vim.v.shell_error == 0 then
-      print('Made executable: ' .. file_path)
-    else
-      print('Failed to make executable: ' .. file_path)
-    end
-  end,
+  require('cmd.actions.make_executable').make_executable,
   {
     desc = 'Make current file executable'
   }
@@ -387,21 +175,7 @@ cmd_user(
 
 cmd_user(
   'D',
-  function()
-    local notes_dir = vim.fn.expand('$NOTES_DIR')
-    local output = vim.fn.system({ 'bash', notes_dir .. '/app/schd-new-daily.sh' })
-
-    -- get last line of output
-    local lines = vim.fn.split(output, '\n')
-    local today_filepath = vim.fn.trim(lines[#lines])
-
-    -- if today file exists, open it
-    if vim.fn.filereadable(today_filepath) == 1 then
-      vim.cmd('e ' .. today_filepath)
-    end
-
-    vim.notify('\n' .. output, vim.log.levels.INFO)
-  end,
+  require('cmd.actions.daily_note_new').daily_note_new,
   {
     desc = 'Create new daily note'
   }
@@ -409,21 +183,7 @@ cmd_user(
 
 cmd_user(
   'DL',
-  function()
-    local notes_dir = vim.fn.expand('$NOTES_DIR')
-    local output = vim.fn.system({ 'bash', notes_dir .. '/app/finder/finder-latest.sh' })
-
-    -- get last line of output
-    local lines = vim.fn.split(output, '\n')
-    local latest_filepath = vim.fn.trim(lines[#lines])
-
-    -- if latest file exists, open it
-    if vim.fn.filereadable(latest_filepath) == 1 then
-      vim.cmd('e ' .. latest_filepath)
-    end
-
-    vim.notify('\nfinder latest:\n' .. output, vim.log.levels.INFO)
-  end,
+  require('cmd.actions.daily_note_latest').daily_note_latest,
   {
     desc = 'Open latest daily note'
   }
@@ -431,21 +191,7 @@ cmd_user(
 
 cmd_user(
   'DP',
-  function()
-    local notes_dir = vim.fn.expand('$NOTES_DIR')
-    local output = vim.fn.system({ 'bash', notes_dir .. '/app/finder/finder-prev.sh' })
-
-    -- get last line of output
-    local lines = vim.fn.split(output, '\n')
-    local prev_filepath = vim.fn.trim(lines[#lines])
-
-    -- if previous file exists, open it
-    if vim.fn.filereadable(prev_filepath) == 1 then
-      vim.cmd('e ' .. prev_filepath)
-    end
-
-    vim.notify('\nfinder previous:\n' .. output, vim.log.levels.INFO)
-  end,
+  require('cmd.actions.daily_note_previous').daily_note_previous,
   {
     desc = 'Open previous daily note'
   }
@@ -453,12 +199,7 @@ cmd_user(
 
 cmd_user(
   'TaskDetail',
-  function()
-    local notes_dir = vim.fn.expand('$NOTES_DIR')
-    local output = vim.fn.system({ 'bun', notes_dir .. '/app/tasks/what_task.ts' })
-
-    open_floating_window('# Task Detail:\n' .. output, 80, 10)
-  end,
+  require('cmd.actions.task_detail').task_detail,
   {
     desc = 'Show detailed task information'
   }
@@ -466,21 +207,7 @@ cmd_user(
 
 cmd_user(
   'TaskMdOpen',
-  function()
-    local notes_dir = vim.fn.expand('$NOTES_DIR')
-    local output = vim.fn.system({ 'bash', notes_dir .. '/projects/products/open-md-product.sh', '--path' })
-
-    -- get last line of output
-    local lines = vim.fn.split(output, '\n')
-    local md_filepath = vim.fn.trim(lines[#lines])
-
-    -- if md file exists, open it
-    if vim.fn.filereadable(md_filepath) == 1 then
-      vim.cmd('e ' .. md_filepath)
-    end
-
-    vim.notify('\n' .. output)
-  end,
+  require('cmd.actions.task_md_open').task_md_open,
   {
     desc = 'Open task markdown'
   }
@@ -488,21 +215,7 @@ cmd_user(
 
 cmd_user(
   'TaskMdNew',
-  function()
-    local notes_dir = vim.fn.expand('$NOTES_DIR')
-    local output = vim.fn.system({ 'bash', notes_dir .. '/projects/products/new-md-product.sh', '--path' })
-
-    -- get last line of output
-    local lines = vim.fn.split(output, '\n')
-    local md_filepath = vim.fn.trim(lines[#lines])
-
-    -- if md file exists, open it
-    if vim.fn.filereadable(md_filepath) == 1 then
-      vim.cmd('e ' .. md_filepath)
-    end
-
-    vim.notify('\n' .. output)
-  end,
+  require('cmd.actions.task_md_new').task_md_new,
   {
     desc = 'Create new task markdown'
   }
@@ -510,12 +223,7 @@ cmd_user(
 
 cmd_user(
   'TaskBrowserTabs',
-  function()
-    local notes_dir = vim.fn.expand('$NOTES_DIR')
-    local output = vim.fn.system({ 'bash', notes_dir .. '/app/browser-tabs/mod-tabs-by-ticket-id.sh' })
-
-    vim.notify('\n' .. output)
-  end,
+  require('cmd.actions.task_browser_tabs').task_browser_tabs,
   {
     desc = 'Open browser tabs related to task'
   }
@@ -523,32 +231,11 @@ cmd_user(
 
 cmd_user(
   'T',
-  function(opts)
-    local money_dir = vim.fn.expand('$MONEY_DIR')
-    local cmd = { 'bash', money_dir .. '/trading-journal/trading-journal-tools/new-daily-trading-journal.sh' }
-
-    if opts.args ~= '' then
-      table.insert(cmd, opts.args)
-    end
-
-    local output = vim.fn.system(cmd)
-
-    -- get last line of output
-    local lines = vim.fn.split(output, '\n')
-    local tj_filepath = vim.fn.trim(lines[#lines])
-
-    -- if tj file exists, open it
-    if vim.fn.filereadable(tj_filepath) == 1 then
-      vim.cmd('e ' .. tj_filepath)
-    end
-
-    vim.notify('\n' .. output)
-  end,
+  require('cmd.actions.trading_journal_new').trading_journal_new,
   {
     nargs = '*',
     desc = 'Create new trading journal note'
   }
 )
-
 
 -- @end create user commands
