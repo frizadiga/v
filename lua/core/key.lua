@@ -2,6 +2,7 @@
 -- see: https://neovim.io/doc/user/map.html or `:help map`
 
 local key = vim.keymap.set
+local clipboard = require('shared.clipboard')
 
 -- composite escape
 key('i', 'kj', '<Esc>')
@@ -82,9 +83,6 @@ key("v", "K", ":m '<-2<CR>gv=gv")
 key('n', 'j', "v:count == 0 ? 'gj' : 'j'", { silent = true, expr = true })
 key('n', 'k', "v:count == 0 ? 'gk' : 'k'", { silent = true, expr = true })
 
-key('x', '<leader>p', [["_dP]], { desc = 'Paste without yanking selection' })
-key({ 'n', 'v' }, '<leader>d', '\"_d', { desc = 'Delete without yanking selection' })
-
 -- @start indentation
 -- basic indentation
 key('n', '<Tab>', '>>')   -- indent right in normal mode
@@ -109,10 +107,13 @@ key('n', '<leader>i', 'gg=G<C-o>', { desc = 'Fix indentation for entire file' })
 -- add workspace folder
 -- key('n', '<leader>awf', vim.lsp.buf.add_workspace_folder)
 
--- fix clipboard pasting on windows (remove carriage return characters)
 key({ 'n', 'x' }, 'p', function()
-  local content = vim.fn.getreg('+')
-  local cleaned = content:gsub('\r', '')
-  vim.fn.setreg('z', cleaned)
+  clipboard.set_cleaned_clipboard_register()
   return '"zp'
 end, { expr = true })
+
+key('x', '<leader>p', function()
+  clipboard.set_cleaned_clipboard_register()
+  return '"_d"zP'
+end, { expr = true, desc = 'Paste clipboard without yanking selection' })
+key({ 'n', 'v' }, '<leader>d', '\"_d', { desc = 'Delete without yanking selection' })
