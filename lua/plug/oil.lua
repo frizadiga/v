@@ -16,6 +16,15 @@ return {
         'actions.parent',
         desc = 'Oil: Up one directory',
       },
+      -- refresh oil to update the buffer content, useful when file changes outside of oil
+      ['r'] = {
+        'actions.refresh',
+        desc = 'Oil: Refresh',
+      },
+      ['gr'] = {
+        'actions.refresh',
+        desc = 'Oil: Refresh',
+      },
       ['gd'] = {
         desc = 'Oil: Toggle file detail view',
         callback = function()
