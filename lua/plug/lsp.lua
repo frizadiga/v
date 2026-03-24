@@ -26,7 +26,7 @@ return {
         'zls',
         'gopls',
         'html',
-        'ts_ls',
+        'vtsls',
         'jsonls',
         'taplo',
         'yamlls',
@@ -59,7 +59,28 @@ return {
       vim.lsp.config['*'] = { capabilities = capabilities }
 
       -- configure servers that need custom settings
-      vim.lsp.config.ts_ls = { root_dir = get_git_root }
+      local vtsls_lang_opts = {
+        inlayHints = {
+          variableTypes = { enabled = true },
+          parameterTypes = { enabled = true },
+          parameterNames = { enabled = 'all' },
+          enumMemberValues = { enabled = true },
+          functionLikeReturnTypes = { enabled = true },
+          propertyDeclarationTypes = { enabled = true },
+        },
+        updateImportsOnFileMove = { enabled = 'prompt' },
+      }
+      vim.lsp.config.vtsls = {
+        settings = {
+          javascript = vtsls_lang_opts,
+          typescript = vtsls_lang_opts,
+          vtsls = {
+            autoUseWorkspaceTsdk = true, -- use workspace TS version
+            -- maxTsServerMemory = 5120, -- only if open shitty large monorepo
+            experimental = { completion = { enableServerSideFuzzyMatch = true } },
+          },
+        }
+      }
       vim.lsp.config.eslint = { root_dir = get_git_root }
       vim.lsp.config.lua_ls = {
         settings = {
@@ -106,7 +127,7 @@ return {
         'rust_analyzer',
         'bashls',
         'gopls',
-        'ts_ls',
+        'vtsls',
         'eslint',
         'jsonls',
         'taplo',

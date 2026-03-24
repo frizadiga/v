@@ -21,10 +21,6 @@ return {
         'actions.refresh',
         desc = 'Oil: Refresh',
       },
-      ['gr'] = {
-        'actions.refresh',
-        desc = 'Oil: Refresh',
-      },
       ['gd'] = {
         desc = 'Oil: Toggle file detail view',
         callback = function()
