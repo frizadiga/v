@@ -238,4 +238,12 @@ cmd_user(
   }
 )
 
+cmd_user(
+  'HackyRedraw',
+  require('cmd.actions.hacky_redraw').hacky_redraw,
+  {
+    desc = 'Hacky command to trigger CursorMoved'
+  }
+)
+
 -- @end create user commands
