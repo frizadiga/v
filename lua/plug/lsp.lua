@@ -21,7 +21,7 @@ return {
       auto_install = true,
       ensure_installed = {
         'bashls',
-        'powershell_es',
+        -- 'powershell_es', -- disabled until runaway pwsh process issue is resolved
         -- 'clangd', -- exluded to use native binary
         'zls',
         'gopls',
@@ -110,22 +110,23 @@ return {
         }
       }
       vim.lsp.config.yamlls = { filetypes = { 'yml', 'yaml' } }
+      -- disabled for now until issue with runaway pwsh process is resolved
       -- native Linux pwsh required: pwsh.exe blocked by Group Policy on WSL UNC paths.
-      local mason_path = vim.fn.stdpath('data') .. '/mason/packages/powershell-editor-services'
-      local pwsh_bin = vim.fn.expand('~/.local/share/pwsh/pwsh')
-      vim.lsp.config.powershell_es = {
-        cmd = {
-          pwsh_bin, '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command',
-          string.format(
-            "& '%s/PowerShellEditorServices/Start-EditorServices.ps1' -BundledModulesPath '%s' -LogPath '%s' -SessionDetailsPath '%s' -FeatureFlags @() -AdditionalModules @() -HostName nvim -HostProfileId 0 -HostVersion 1.0.0 -Stdio -LogLevel Normal",
-            mason_path, mason_path,
-            vim.fn.stdpath('cache') .. '/powershell_es.log',
-            vim.fn.stdpath('cache') .. '/powershell_es.session.json'
-          )
-        },
-        cmd_env = { DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = '1' },
-        filetypes = { 'ps1', 'psm1', 'psd1' },
-      }
+      -- local mason_path = vim.fn.stdpath('data') .. '/mason/packages/powershell-editor-services'
+      -- local pwsh_bin = vim.fn.expand('~/.local/share/pwsh/pwsh')
+      -- vim.lsp.config.powershell_es = {
+      --   cmd = {
+      --     pwsh_bin, '-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command',
+      --     string.format(
+      --       "& '%s/PowerShellEditorServices/Start-EditorServices.ps1' -BundledModulesPath '%s' -LogPath '%s' -SessionDetailsPath '%s' -FeatureFlags @() -AdditionalModules @() -HostName nvim -HostProfileId 0 -HostVersion 1.0.0 -Stdio -LogLevel Normal",
+      --       mason_path, mason_path,
+      --       vim.fn.stdpath('cache') .. '/powershell_es.log',
+      --       vim.fn.stdpath('cache') .. '/powershell_es.session.json'
+      --     )
+      --   },
+      --   cmd_env = { DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = '1' },
+      --   filetypes = { 'ps1', 'psm1', 'psd1' },
+      -- }
       vim.lsp.config.solidity_ls_nomicfoundation = {
         cmd = {
           vim.fn.stdpath("data") .. "/mason/bin/nomicfoundation-solidity-language-server",
@@ -152,7 +153,7 @@ return {
         'pyright',
         'lua_ls',
         'mojo',
-        'powershell_es',
+        -- 'powershell_es', -- disabled until runaway pwsh process issue is resolved
         'nginx_language_server',
         'solidity_ls_nomicfoundation',
       }
