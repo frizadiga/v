@@ -46,10 +46,10 @@ return {
             -- https://github.com/CopilotC-Nvim/CopilotChat.nvim/issues/324#issuecomment-2118551487
           },
         },
-        agent = 'copilot',            -- can be specified manually in prompt via @
-        model = 'claude-sonnet-4.6', -- can be specified manually in prompt via $
-        context = nil,                -- default context or array of contexts to use (can be specified manually in prompt via #).
-        temperature = 0.1,            -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
+        agent = 'copilot',                                                                        -- can be specified manually in prompt via @
+        model = vim.fn.getenv('V_CC_MODEL') ~= vim.NIL and vim.fn.getenv('V_CC_MODEL') or 'auto', -- can be specified manually in prompt via $
+        context = nil,                                                                            -- default context or array of contexts to use (can be specified manually in prompt via #).
+        temperature = 0.1,                                                                        -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
         prompts = {
           -- handle non latin languages
           TransToEn = {
