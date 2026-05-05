@@ -1,9 +1,61 @@
 return {
+  -- {
+  --   'github/copilot.vim',
+  --   name = 'copilot',
+  --   -- event = 'InsertEnter', -- load on insert mode
+  --   event = 'VeryLazy', -- load on idle time (after UIEnter)
+  -- },
   {
-    'github/copilot.vim',
-    name = 'copilot',
-    -- event = 'InsertEnter', -- load on insert mode
+    "milanglacier/minuet-ai.nvim",
     event = 'VeryLazy', -- load on idle time (after UIEnter)
+    priority = 100,
+    config = function()
+      local endpoint = os.getenv("OLLAMA_TOKEN_FACTORY_URL_COMPLETIONS")
+      require("minuet").setup({
+        provider = "openai_fim_compatible",
+
+        -- Optional but recommended for local models
+        n_completions = 1,    -- only ask for 1 suggestion
+        context_window = 512, -- adjust based on your model's context
+        -- Remote Ollama inference can be slower; default 3s is bit too tight.
+        request_timeout = 5,
+        throttle = 1500,
+        debounce = 500,
+
+        provider_options = {
+          openai_fim_compatible = {
+            api_key = "TERM", -- dummy value, Ollama doesn't need auth
+            name = "Ollama",
+            end_point = endpoint,
+            stream = true,
+            -- Must be a FIM-capable model. Chat models like qwen3.5, gemma,
+            -- plain deepseek-coder do NOT support FIM and will fail silently.
+            -- Known-good: qwen2.5-coder, deepseek-coder-v2, codestral.
+            model = "qwen2.5-coder:7b",
+            optional = {
+              max_tokens = 128,
+              top_p = 0.9,
+            },
+          },
+        },
+
+        virtualtext = {
+          keymap = {
+            accept = "<Tab>",
+            accept_line = "<C-l>",
+            accept_n_lines = "<C-k>",
+            next = "<C-j>",
+            prev = "<C-h>",
+            dismiss = "<C-e>",
+          },
+          auto_trigger_ft = { "*" }, -- enables all filetypes
+        },
+
+        -- Optional: also enable LSP-style inline completion (Neovim 0.10+)
+        -- Minuet LSP inline completion and Minuet virtual text should not be used together. Disable one of them, or set lsp.inline_completion.warn_on_virtualtext = false to suppress this warning.
+        -- lsp = { inline_completion = { enable = true } },
+      })
+    end,
   },
   {
     'CopilotC-Nvim/CopilotChat.nvim',
