@@ -30,7 +30,7 @@ gh repo clone frizadiga/v ~/.config/nvim
 # Start Neovim
 nvim
 ```
-Upon launching, `lazy.nvim` plugin manager will automatically bootstrap and install all the plugins.
+Upon launching, `lazy.nvim` plugin manager will automatically bootstrap and install all the plugins (why not just use the native nvim v12 plug manager (`pack`)? big no, it still has far inferior performance compared to `lazy.nvim` approach).
 
 ## Plugins
 - plugin manager: `lazy.nvim`

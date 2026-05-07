@@ -1,15 +1,11 @@
 return {
-  -- {
-  --   'github/copilot.vim',
-  --   name = 'copilot',
-  --   -- event = 'InsertEnter', -- load on insert mode
-  --   event = 'VeryLazy', -- load on idle time (after UIEnter)
-  -- },
   {
     "milanglacier/minuet-ai.nvim",
+    name = 'ai-completions',
     event = 'VeryLazy', -- load on idle time (after UIEnter)
     priority = 100,
     config = function()
+      local model = os.getenv("OLLAMA_GHOST_COMPLETIONS_MODEL")
       local endpoint = os.getenv("OLLAMA_TOKEN_FACTORY_URL_COMPLETIONS")
       require("minuet").setup({
         provider = "openai_fim_compatible",
@@ -24,14 +20,14 @@ return {
 
         provider_options = {
           openai_fim_compatible = {
-            api_key = "TERM", -- dummy value, Ollama doesn't need auth
+            api_key = "TERM", -- REQUIRED (dummy) and val must be 'TERM'
             name = "Ollama",
             end_point = endpoint,
             stream = true,
             -- Must be a FIM-capable model. Chat models like qwen3.5, gemma,
             -- plain deepseek-coder do NOT support FIM and will fail silently.
             -- Known-good: qwen2.5-coder, deepseek-coder-v2, codestral.
-            model = "qwen2.5-coder:7b",
+            model = model,
             optional = {
               max_tokens = 128,
               top_p = 0.9,
@@ -59,7 +55,7 @@ return {
   },
   {
     'CopilotC-Nvim/CopilotChat.nvim',
-    name = 'copilot-chat',
+    name = 'ai-chat',
     event = 'VeryLazy',
     branch = 'main',
     build = 'make tiktoken', -- only on MacOS or Linux
