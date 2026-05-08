@@ -1,66 +1,37 @@
 return {
   {
-    "milanglacier/minuet-ai.nvim",
+    "ggml-org/llama.vim",
     name = 'ai-completions',
     event = 'VeryLazy', -- load on idle time (after UIEnter)
-    priority = 100,
-    config = function()
-      local model = os.getenv("OLLAMA_GHOST_COMPLETIONS_MODEL")
-      local endpoint = os.getenv("OLLAMA_TOKEN_FACTORY_URL_COMPLETIONS")
-      require("minuet").setup({
-        provider = "openai_fim_compatible",
+    init = function()
+      local endpoint = os.getenv("LLAMACPP_TOKEN_FACTORY_INFILL_EP")
 
-        -- Optional but recommended for local models
-        n_completions = 1,    -- only ask for 1 suggestion
-        context_window = 512, -- adjust based on your model's context
-        -- Remote Ollama inference can be slower; default 3s is bit too tight.
-        request_timeout = 5,
-        throttle = 1500,
-        debounce = 500,
+      vim.g.llama_config = {
+        endpoint_fim = endpoint,
 
-        provider_options = {
-          openai_fim_compatible = {
-            api_key = "TERM", -- REQUIRED (dummy) and val must be 'TERM'
-            name = "Ollama",
-            end_point = endpoint,
-            stream = true,
-            -- Must be a FIM-capable model. Chat models like qwen3.5, gemma,
-            -- plain deepseek-coder do NOT support FIM and will fail silently.
-            -- Known-good: qwen2.5-coder, deepseek-coder-v2, codestral.
-            model = model,
-            optional = {
-              max_tokens = 128,
-              top_p = 0.9,
-            },
-          },
-        },
+        auto_fim = true,         -- enable ghost text
+        t_max_predict_ms = 4000, -- 4 seconds max per prediction (was 'timeout')
+        n_predict = 128,
 
-        virtualtext = {
-          keymap = {
-            accept = "<Tab>",
-            accept_line = "<C-l>",
-            accept_n_lines = "<C-k>",
-            next = "<C-j>",
-            prev = "<C-h>",
-            dismiss = "<C-e>",
-          },
-          auto_trigger_ft = { "*" }, -- enables all filetypes
-        },
+        -- Keymaps (llama.vim only supports full/line/word accept)
+        keymap_fim_accept_full = "<Tab>",
+        keymap_fim_accept_line = "<C-l>",
+        keymap_fim_accept_word = "<C-k>",
 
-        -- Optional: also enable LSP-style inline completion (Neovim 0.10+)
-        -- Minuet LSP inline completion and Minuet virtual text should not be used together. Disable one of them, or set lsp.inline_completion.warn_on_virtualtext = false to suppress this warning.
-        -- lsp = { inline_completion = { enable = true } },
-      })
-    end,
+        show_info = 2, -- 2 = inline info (speed/tokens); 1 = statusline; 0 = off
+      }
+    end
   },
   {
     'CopilotC-Nvim/CopilotChat.nvim',
     name = 'ai-chat',
-    event = 'VeryLazy',
+    event = 'VeryLazy',      -- load on idle time (after UIEnter)
     branch = 'main',
     build = 'make tiktoken', -- only on MacOS or Linux
     config = function()
       local cc = require 'CopilotChat'
+      local ollama_model = os.getenv("OLLAMA_CHAT_MODEL")
+      local ollama_endpoint = os.getenv("OLLAMA_TOKEN_FACTORY_URL_CHAT")
 
       local def_win_opt = {
         title = '',
@@ -94,10 +65,34 @@ return {
             -- https://github.com/CopilotC-Nvim/CopilotChat.nvim/issues/324#issuecomment-2118551487
           },
         },
-        agent = 'copilot',                                                                        -- can be specified manually in prompt via @
-        model = vim.fn.getenv('V_CC_MODEL') ~= vim.NIL and vim.fn.getenv('V_CC_MODEL') or 'auto', -- can be specified manually in prompt via $
-        context = nil,                                                                            -- default context or array of contexts to use (can be specified manually in prompt via #).
-        temperature = 0.1,                                                                        -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
+        -- Use Ollama via an OpenAI-compatible endpoint instead of Copilot.
+        -- The provider is auto-selected based on which provider's get_models()
+        -- exposes the chosen `model` id; we also disable the default copilot
+        -- provider so it can't claim a model id collision.
+        -- Ref: https://github.com/CopilotC-Nvim/CopilotChat.nvim/blob/main/lua/CopilotChat/config/providers.lua
+        providers = {
+          copilot = { disabled = true },
+          github_models = { disabled = true },
+          ollama = {
+            prepare_input = require('CopilotChat.config.providers').copilot.prepare_input,
+            prepare_output = require('CopilotChat.config.providers').copilot.prepare_output,
+            get_models = function(headers)
+              local base = ollama_endpoint:gsub('/chat/completions$', ''):gsub('/v1$', '')
+              local response, err = require('CopilotChat.utils.curl').get(base .. '/v1/models', {
+                headers = headers,
+                json_response = true,
+              })
+              if err then error(err) end
+              return vim.tbl_map(function(m)
+                return { id = m.id, name = m.id, streaming = true, tools = false }
+              end, (response.body or {}).data or {})
+            end,
+            get_url = function() return ollama_endpoint end,
+          },
+        },
+        model = ollama_model, -- can be specified manually in prompt via $
+        context = nil,        -- default context or array of contexts to use (can be specified manually in prompt via #).
+        temperature = 0.1,    -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
         prompts = {
           -- handle non latin languages
           TransToEn = {

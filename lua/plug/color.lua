@@ -35,17 +35,16 @@ return {
         -- LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
         -- MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
 
+        -- @NOTE: run `:Telescope highlights` to see all available highlight groups
         local ColorMainRed = '#D25858'
         local ColorSecondaryRed = '#9c3333'
         local ColorLineNumber = '#625E5A'
-        -- local ColorCursorLineDef = '#393836'
 
         return {
           -- text styles
           ["@variable.builtin"] = { italic = false },
 
           -- highlight colors
-          -- Visual = { bg = '#4f3333' },
           Visual = { fg = 'white', bg = ColorMainRed },
           LineNr = { fg = ColorLineNumber }, -- regular line number
           NormalFloat = { bg = 'none' },
@@ -61,13 +60,13 @@ return {
           MiniPickPrompt = { bg = 'none' },
           MiniTablineHidden = { bg = 'none' },
           MiniStatuslineFilename = { bg = 'none' },
+          llama_hl_fim_info  = { fg = '#555555', bg = 'none' },
           CopilotChatHeader = { fg = ColorSecondaryRed },
           CopilotChatSeparator = { fg = '#54546d', bg = 'none' },
           TelescopeBorder = { bg = 'none' },
           TelescopeMatching = { bg = ColorSecondaryRed },
           TelescopePromptPrefix = { fg = ColorMainRed, bg = 'none' },
           TelescopePromptNormal = { fg = ColorMainRed, bg = 'none' },
-          -- TelescopeSelection = { fg = 'white', bg = ColorSecondaryRed }, -- hlgroup: `CursorLine`
           TelescopeSelectionCaret = { fg = ColorSecondaryRed, bg = ColorSecondaryRed }, -- hlgroup: `CursorLine`
         }
       end,

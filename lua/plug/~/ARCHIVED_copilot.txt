@@ -1,0 +1,6 @@
+return {
+  'github/copilot.vim',
+  name = 'copilot',
+  -- event = 'InsertEnter', -- load on insert mode
+  event = 'VeryLazy', -- load on idle time (after UIEnter)
+}

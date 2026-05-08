@@ -28,7 +28,8 @@ mv ~/.config/nvim ~/.config/nvim.bak
 gh repo clone frizadiga/v ~/.config/nvim
 
 # Start Neovim
-nvim
+alias v=nvim # Only if you value your time.
+v
 ```
 Upon launching, `lazy.nvim` plugin manager will automatically bootstrap and install all the plugins (why not just use the native nvim v12 plug manager (`pack`)? big no, it still has far inferior performance compared to `lazy.nvim` approach).
 
@@ -37,16 +38,16 @@ Upon launching, `lazy.nvim` plugin manager will automatically bootstrap and inst
 - find & replace: `grug-far`
 - file explorer: `oil`
 - fuzzy finder: `fzf` + `telescope`
-- in buffer AST: `treesitter`
-- in buffer git sign: `gitsigns`
-- git integration: `lazygit` via tmux
-- full explorer integration: `yazi` via tmux
+- in-buffer AST: `treesitter`
+- in-buffer git sign: `gitsigns`
+- git integration: `lazygit` via tmux.
+- coding agent integration: `opencode` via tmux.
 - lsp: `nvim-lspconfig`
 - lsp installer manager: `mason`
 - nvim source completion: `blink`
-- code completion: `copilot` + `copilot-chat`
 - statusline: `lualine`
 - layout utils & notification finder: `nui` + `noice`
+- ai this ai that: `llama.vim` (local net instant FIM completion via bare llama.cpp) + `copilot-chat` (chat based via regular ollama).
 
 > [!NOTE]
 > **Custom Commands Disclaimer**
