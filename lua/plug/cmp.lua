@@ -13,20 +13,10 @@ return {
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
   opts = {
-    -- use `super-tab` preset with some customization (set explicitly for self-docs)
     keymap = {
-      ['<Tab>'] = {
-        function(cmp)
-          if cmp.snippet_active() then
-            return cmp.accept()
-          else
-            return cmp.select_and_accept()
-          end
-        end,
-        'snippet_forward',
-        'fallback'
-      },
-      ['<S-Tab>'] = { 'hide', 'fallback' },
+      ['<CR>'] = { 'accept', 'fallback' },
+      ['<C-y>'] = { 'select_and_accept' },
+      ['<Escape>'] = { 'hide', 'fallback' },
 
       ['<C-p>'] = { 'select_prev', 'fallback_to_mappings' },
       ['<C-n>'] = { 'select_next', 'fallback_to_mappings' },

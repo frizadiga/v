@@ -4,21 +4,21 @@ return {
     name = 'ai-completions',
     event = 'VeryLazy', -- load on idle time (after UIEnter)
     init = function()
-      local endpoint = os.getenv("LLAMACPP_TOKEN_FACTORY_INFILL_EP")
-
       vim.g.llama_config = {
-        endpoint_fim = endpoint,
+        auto_fim               = true,
+        n_predict              = 128,
+        t_max_predict_ms       = 3500,
 
-        auto_fim = true,         -- enable ghost text
-        t_max_predict_ms = 4000, -- 4 seconds max per prediction (was 'timeout')
-        n_predict = 128,
-
-        -- Keymaps (llama.vim only supports full/line/word accept)
         keymap_fim_accept_full = "<Tab>",
-        keymap_fim_accept_line = "<C-l>",
-        keymap_fim_accept_word = "<C-k>",
+        keymap_fim_trigger     = "<C-l>f",
+        keymap_fim_accept_line = "<S-Tab>",
+        keymap_fim_accept_word = "<C-l>]",
+        keymap_inst_trigger    = "<C-l>i",
+        keymap_inst_retry      = "<C-l>r",
+        keymap_inst_continue   = "<C-l>c",
 
-        show_info = 2, -- 2 = inline info (speed/tokens); 1 = statusline; 0 = off
+        endpoint_fim           = os.getenv("LLAMACPP_TOKEN_FACTORY_INFILL_EP"),
+        show_info              = 2, -- 2 = inline info (speed/tokens); 1 = statusline; 0 = off
       }
     end
   },

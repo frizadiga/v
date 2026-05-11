@@ -59,7 +59,7 @@ vim.opt.guicursor = 'n-c-sm:block,i-ci-ve:hor100,v:hor100,r-cr-o:hor100'
 -- @end_section cursor
 
 -- show line numbers
-vim.opt.rnu = true -- relative line numbers
+vim.opt.rnu = true   -- relative line numbers
 vim.wo.number = true -- absolute current cursor line numbers
 -- vim.wo.cursorline = true -- highlight current line
 
@@ -70,8 +70,8 @@ vim.opt.fillchars = { eob = ' ' }
 vim.opt.list = true
 vim.opt.listchars = { tab = '→ ', trail = '·', extends = '›', precedes = '‹', nbsp = '␣' }
 
-vim.opt.timeoutlen = 1000 -- default is 1000
-vim.opt.updatetime = 4000 -- default is 4000
+vim.opt.timeoutlen = 500  -- default is 1000
+vim.opt.updatetime = 2000 -- default is 4000
 
 -- use system clipboard
 vim.opt.clipboard = 'unnamedplus'
@@ -95,6 +95,9 @@ vim.opt.expandtab = true -- convert tabs to spaces
 vim.opt.tabstop = 2      -- default spaces for tab
 vim.opt.softtabstop = 2  -- default spaces when editing
 vim.opt.shiftwidth = 2   -- default spaces for auto indent
+vim.opt.breakindent = true
+vim.opt.breakindentopt = "shift:2"  -- add 2 extra spaces on top of the indent
+vim.opt.showbreak = "↪ "            -- show a symbol at the start of wrapped lines
 
 -- optional: add indent detection for better results
 vim.g.detect_indent = true
@@ -104,10 +107,12 @@ vim.g.detect_indent_max_lines = 1000
 vim.opt.mouse = '' -- scroll by cursor movement
 
 -- @start lsp
--- show lsp diagnostics on popup
--- ref: https://stackoverflow.com/a/70760302/6893303
-vim.diagnostic.config({ virtual_text = false })
-
+vim.diagnostic.config({
+  -- show lsp diagnostics on popup
+  -- ref: https://stackoverflow.com/a/70760302/6893303
+  virtual_text = false,
+  update_in_insert = false, -- no squiggles while in insert mode
+})
 -- show line diagnostics automatically in hover window
 vim.opt.updatetime = 250 -- default: 250
 vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]

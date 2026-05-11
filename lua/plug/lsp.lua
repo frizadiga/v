@@ -94,7 +94,11 @@ return {
               }
             },
             format = { enable = true },
-          }
+          },
+        },
+        -- only send file to LSP on save, not on every keystroke
+        flags = {
+          debounce_text_changes = 1500, -- ms to wait after typing stops (default: 150)
         },
       }
       vim.lsp.config.nginx_language_server = {

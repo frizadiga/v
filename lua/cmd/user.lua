@@ -177,6 +177,7 @@ cmd_user(
   'D',
   require('cmd.actions.daily_note_new').daily_note_new,
   {
+    nargs = '*',
     desc = 'Create new daily note'
   }
 )

@@ -45,7 +45,7 @@ key('n', '<leader>h', '<CMD>bp<CR>')
 key('n', '<leader>H', '<CMD>bn<CR>')
 
 -- write to fs if only buffer is modified
-key({ 'n', 'x' }, '<Space><Space>', '<CMD>update<CR>')
+key({ 'n', 'v' }, '<leader><Space>', '<CMD>update<CR>')
 -- @end buffer
 
 -- @start split view
