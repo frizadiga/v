@@ -110,6 +110,7 @@ vim.opt.mouse = '' -- scroll by cursor movement
 vim.diagnostic.config({
   -- show lsp diagnostics on popup
   -- ref: https://stackoverflow.com/a/70760302/6893303
+  signs = true,
   virtual_text = false,
   update_in_insert = false, -- no squiggles while in insert mode
 })

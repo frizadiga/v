@@ -9,7 +9,19 @@ return {
     local common_sections = {
       lualine_a = { 'mode' },
       lualine_b = { { 'branch', icon = { '', align = 'right', } } },
-      lualine_c = { 'diff', 'diagnostics', 'filename' },
+      lualine_c = {
+        'diff',
+        {
+          'diagnostics',
+          symbols = {
+            error = 'E:',
+            warn  = 'W:',
+            info  = 'I:',
+            hint  = 'H:',
+          },
+        },
+        'filename'
+      },
       lualine_x = {
         'selectioncount',
         -- {
@@ -23,7 +35,12 @@ return {
         --   color = { fg = fg_color },
         -- },
       },
-      lualine_y = { 'filetype', 'encoding', 'fileformat' },
+      -- lualine_y = { 'filetype', 'encoding', 'fileformat' },
+      lualine_y = {
+        { 'filetype', icon_only = false, icons_enabled = false },
+        'encoding',
+        'fileformat'
+      },
       lualine_z = {
         {
           'location',

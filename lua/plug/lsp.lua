@@ -48,15 +48,10 @@ return {
     'neovim/nvim-lspconfig',
     event = 'VeryLazy',
     config = function()
-      local lspconfig_util = require 'lspconfig.util'
       local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-      local get_git_root = function(fname)
-        return lspconfig_util.root_pattern '.git' (fname)
-      end
-
       -- set default capabilities for all servers
-      vim.lsp.config['*'] = { capabilities = capabilities }
+      vim.lsp.config['*'] = { capabilities = capabilities, root_markers = { '.git' } }
 
       -- configure servers that need custom settings
       local vtsls_lang_opts = {
@@ -81,8 +76,11 @@ return {
           },
         }
       }
-      vim.lsp.config.eslint = { root_dir = get_git_root }
+      vim.lsp.config.eslint = {}
       vim.lsp.config.lua_ls = {
+        cmd = { 'lua-language-server' },
+        filetypes = { 'lua' },
+        root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
         settings = {
           Lua = {
             telemetry = { enable = false },
@@ -90,21 +88,16 @@ return {
               checkThirdParty = false,
               library = {
                 vim.fn.expand('$VIMRUNTIME/lua'),
-                vim.fn.stdpath('config') .. '/lua'
-              }
+                vim.fn.stdpath('config') .. '/lua',
+              },
             },
             format = { enable = true },
           },
-        },
-        -- only send file to LSP on save, not on every keystroke
-        flags = {
-          debounce_text_changes = 1500, -- ms to wait after typing stops (default: 150)
         },
       }
       vim.lsp.config.nginx_language_server = {
         cmd = { 'nginx-language-server' },
         filetypes = { 'nginx' },
-        root_dir = get_git_root,
         settings = {
           nginx = {
             format = {
@@ -137,7 +130,6 @@ return {
           "--stdio"
         },
         filetypes = { 'solidity', 'sol' },
-        root_dir = get_git_root,
       }
       -- TODO: enable when mojo-lsp-server is available via mason or use clangd approach
       -- vim.lsp.config.mojo = { cmd = { 'mojo-lsp-server' }, filetypes = { 'mojo', '🔥' } }

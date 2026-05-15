@@ -1,7 +1,9 @@
+local std = require 'shared.__std'
+
 return {
   {
     "ggml-org/llama.vim",
-    name = 'ai-completions',
+    name = 'ai-cmp',
     event = 'VeryLazy', -- load on idle time (after UIEnter)
     init = function()
       vim.g.llama_config = {
@@ -17,8 +19,8 @@ return {
         keymap_inst_retry      = "<C-l>r",
         keymap_inst_continue   = "<C-l>c",
 
-        endpoint_fim           = os.getenv("LLAMACPP_TOKEN_FACTORY_INFILL_EP"),
-        show_info              = 2, -- 2 = inline info (speed/tokens); 1 = statusline; 0 = off
+        show_info              = 2, -- inline info
+        endpoint_fim           = std.get_env_var("LLAMACPP_TOKEN_FACTORY_INFILL_EP"),
       }
     end
   },
@@ -30,8 +32,7 @@ return {
     build = 'make tiktoken', -- only on MacOS or Linux
     config = function()
       local cc = require 'CopilotChat'
-      local ollama_model = os.getenv("OLLAMA_CHAT_MODEL")
-      local ollama_endpoint = os.getenv("OLLAMA_TOKEN_FACTORY_URL_CHAT")
+      local ollama_ep = std.get_env_var("OLLAMA_TOKEN_FACTORY_URL_CHAT")
 
       local def_win_opt = {
         title = '',
@@ -44,9 +45,11 @@ return {
 
       cc.setup({
         debug = false,
-        error_header = 'Err',
-        answer_header = '▶︎ A',
-        question_header = '▶︎ Q',
+        headers = {
+          error = 'Err',
+          user = '▶︎ 1',
+          assistant = '▶︎ 2',
+        },
         -- separator = '',
         window = def_win_opt,
         mappings = {
@@ -77,7 +80,7 @@ return {
             prepare_input = require('CopilotChat.config.providers').copilot.prepare_input,
             prepare_output = require('CopilotChat.config.providers').copilot.prepare_output,
             get_models = function(headers)
-              local base = ollama_endpoint:gsub('/chat/completions$', ''):gsub('/v1$', '')
+              local base = ollama_ep:gsub('/chat/completions$', ''):gsub('/v1$', '')
               local response, err = require('CopilotChat.utils.curl').get(base .. '/v1/models', {
                 headers = headers,
                 json_response = true,
@@ -87,12 +90,12 @@ return {
                 return { id = m.id, name = m.id, streaming = true, tools = false }
               end, (response.body or {}).data or {})
             end,
-            get_url = function() return ollama_endpoint end,
+            get_url = function() return ollama_ep end,
           },
         },
-        model = ollama_model, -- can be specified manually in prompt via $
-        context = nil,        -- default context or array of contexts to use (can be specified manually in prompt via #).
-        temperature = 0.1,    -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
+        model = std.get_env_var("OLLAMA_CHAT_MODEL"), -- can be specified manually in prompt via $
+        context = nil,                                -- default context or array of contexts to use (can be specified manually in prompt via #).
+        temperature = 0.1,                            -- LLM result temperature (0.0 - 1.0) closer to 0 is more deterministic, closer to 1 is more "creative".
         prompts = {
           -- handle non latin languages
           TransToEn = {

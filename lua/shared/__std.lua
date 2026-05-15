@@ -14,4 +14,12 @@ function M.print_reverse_lines(output)
   for i = #lines, 1, -1 do print(lines[i]) end
 end
 
+function M.get_env_var(name)
+  local value = os.getenv(name)
+  if value == nil or value == "" then
+    error("Environment variable " .. name .. " is not set")
+  end
+  return value
+end
+
 return M
