@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# alias: 'n/a'
-# desc: fn_lazy_lock_time_machine description.
-# usage: fn_lazy_lock_time_machine.sh <commit_hash?>
-# flags: @WIP:0 @TODO:0 @FIXME:0 @BUG:0 @OPTIMIZE:0 @REFACTOR:0 @DEPRECATED:0
+# alias: make time-machine [commit_hash]
+# desc: Restore lazy-lock.json from a past commit (fzf interactive or by hash).
+# usage: lazy-lock-time-machine.sh [commit_hash]
 
-declare -r _self_path_file_=$(readlink -f "$0")
-declare -r _self_path_dir_=$(dirname "${_self_path_file_}")
+__self_path_file=$(readlink -f "${BASH_SOURCE[0]}")
+declare -r __self_path_file
+declare -r __self_path_dir=${__self_path_file%/*}
 
 fn_lazy_lock_time_machine() {
   local commit_hash=${1}
