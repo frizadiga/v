@@ -247,4 +247,13 @@ cmd_user(
   }
 )
 
+-- ai_cmp_server_healthcheck
+cmd_user(
+  'AIcmpServerHealthcheck',
+  require('cmd.actions.ai_cmp_server_healthcheck').ai_cmp_server_healthcheck,
+  {
+    desc = 'Check AI cmp remote server healthcheck'
+  }
+)
+
 -- @end create user commands
