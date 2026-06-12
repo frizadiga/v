@@ -14,7 +14,7 @@ fn_lazy_lock_time_machine() {
     commit_hash=$(git log --oneline --format="%h %ad %s" --date=short lazy-lock.json | fzf | awk '{print $1}')
   fi
 
-  git checkout "${commit_hash}" -- "${_self_path_dir_}/lazy-lock.json"
+  git checkout "${commit_hash}" -- "${__self_path_dir}/lazy-lock.json"
 }
 
 fn_lazy_lock_time_machine "$@"

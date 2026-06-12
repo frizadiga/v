@@ -59,6 +59,14 @@ cmd_user(
 )
 
 cmd_user(
+  'ClearOldfiles',
+  require('cmd.actions.clear_oldfiles').clear_oldfiles,
+  {
+    desc = 'Clear oldfiles list'
+  }
+)
+
+cmd_user(
   'Todo',
   require('cmd.actions.todo_command').todo_command,
   {
@@ -247,7 +255,6 @@ cmd_user(
   }
 )
 
--- ai_cmp_server_healthcheck
 cmd_user(
   'AIcmpServerHealthcheck',
   require('cmd.actions.ai_cmp_server_healthcheck').ai_cmp_server_healthcheck,
