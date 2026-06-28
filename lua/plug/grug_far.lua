@@ -90,6 +90,23 @@ return {
       })
     end, { desc = 'Grug: Search on current buffer with current selection' })
 
+    vim.keymap.set('n', '<leader>sd', function()
+      grug.open({
+        prefills = {
+          paths = vim.fn.expand('%:p:h'),
+        }
+      })
+    end, { desc = 'Grug: Search on current buffer directory' })
+
+    vim.keymap.set('x', '<leader>sd', function()
+      grug.open({
+        prefills = {
+          paths = vim.fn.expand('%:p:h'),
+          search = vim.fn.expand('<cword>'),
+        }
+      })
+    end, { desc = 'Grug: Search on current buffer directory with current selection' })
+
     vim.keymap.set('x', '<leader>ss', function()
       grug.open({
         prefills = {
