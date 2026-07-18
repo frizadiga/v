@@ -133,6 +133,14 @@ return {
       }
       -- TODO: enable when mojo-lsp-server is available via mason or use clangd approach
       -- vim.lsp.config.mojo = { cmd = { 'mojo-lsp-server' }, filetypes = { 'mojo', '🔥' } }
+      vim.lsp.config.pyright = {
+        settings = {
+          python = {
+            venvPath = '.',
+            pythonPath = './.venv/bin/python',
+          },
+        },
+      }
 
       local servers = {
         'clangd',
