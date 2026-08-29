@@ -16,7 +16,14 @@ return {
           ['--layout'] = 'default',
         },
       },
+      keymaps = {
+        prompt = '▶ ',
+        fzf_opts = {
+          ['--layout'] = 'default',
+        },
+      },
       grep = {
+        prompt = '▶ ',
         fzf_opts = {
           ['--layout'] = 'default',
         },
@@ -42,10 +49,13 @@ return {
 
     -- navigate on result using <CTRL> + jk keys
 
-    -- files search entire project
+    -- find files entire project
     vim.keymap.set('n', '<leader>fz', fzf.files, { desc = 'FZF: files' })
 
-    -- live grep native entire project
+    -- find keymaps (all modes)
+    vim.keymap.set('n', '<leader>fk', fzf.keymaps, { desc = 'FZF: keymaps' })
+
+    -- find 'live grep mode' native entire project
     vim.keymap.set('n', '<leader>FF', function() fzf.live_grep_native({ resume = true }) end, { desc = 'FZF: live_grep_native' })
   end
 }
