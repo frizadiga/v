@@ -109,6 +109,14 @@ return {
       keymaps = keymaps,
       columns = {}, -- see :help oil-columns
       -- columns = { 'icon' }, -- see :help oil-columns
+      -- @NOTE: pin oil's conceal defaults so the internal entry id prefix (`/009 name`) stays hidden
+      -- when something else resets these window options
+      win_options = {
+        conceallevel = 3,
+        -- vim default is '' which reveals concealed text on the cursor line
+        -- 'nvic' keeps the id hidden on the cursor line in normal, visual, insert and cmdline modes
+        concealcursor = 'nvic',
+      },
       view_options = {
         -- show files and directories that start with '.'
         show_hidden = true,
