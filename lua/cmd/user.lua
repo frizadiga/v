@@ -263,4 +263,20 @@ cmd_user(
   }
 )
 
+cmd_user(
+  'MdView',
+  require('cmd.actions.md_view').md_view,
+  {
+    desc = 'View current markdown with glow in float terminal'
+  }
+)
+
+cmd_user(
+  'MdOpen',
+  require('cmd.actions.md_open').md_open,
+  {
+    desc = 'Preview current markdown in browser (gh markdown-preview, live reload)'
+  }
+)
+
 -- @end create user commands
