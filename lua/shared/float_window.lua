@@ -1,7 +1,13 @@
 local M = {}
 
 -- fn to open a floating window
-function M.open_floating_window(buf_body, width, height)
+-- @param buf_body? string text to render; omit for an empty scratch buffer (e.g. terminal)
+-- @param width? number 0-1 is a percentage of columns, >1 is absolute
+-- @param height? number 0-1 is a percentage of lines, >1 is absolute
+-- @param opts? { style?: string, border?: string }
+-- @return win, buf
+function M.open_floating_window(buf_body, width, height, opts)
+  opts = opts or {}
   local _width = width or 0.6
   local _height = height or 0.6
   local final_width, final_height
@@ -25,23 +31,26 @@ function M.open_floating_window(buf_body, width, height)
   local row = math.floor((vim.o.lines - final_height) / 2)
   local col = math.floor((vim.o.columns - final_width) / 2)
 
-  -- split the command output into lines
-  local buf_lines = vim.split(buf_body, '\n', { plain = true })
-
   -- create a new buffer and window
   local buf = vim.api.nvim_create_buf(false, true) -- arg: nofile, scratch buffer
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, buf_lines)
+  if buf_body then
+    -- split the command output into lines
+    local buf_lines = vim.split(buf_body, '\n', { plain = true })
+    vim.api.nvim_buf_set_lines(buf, 0, -1, false, buf_lines)
+  end
 
   -- open the floating window
-  vim.api.nvim_open_win(buf, true, {
-    style = "minimal",
-    border = "rounded",
+  local win = vim.api.nvim_open_win(buf, true, {
+    style = opts.style or "minimal",
+    border = opts.border or "rounded",
     relative = "editor",
     row = row,
     col = col,
     width = final_width,
     height = final_height,
   })
+
+  return win, buf
 end
 
 return M
