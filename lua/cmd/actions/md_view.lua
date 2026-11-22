@@ -6,7 +6,7 @@ local markdown_viewer = require 'shared.markdown_viewer'
 -- view current markdown in a floating terminal via $TOOLS_DIR/markdown-viewer/terminal.sh (glow)
 function M.md_view()
   local file_path, tools_dir = markdown_viewer.prepare()
-  if not file_path then return end
+  if not file_path or not tools_dir then return end
 
   local win, buf = float_win.open_floating_window(nil, 0.8, 0.8)
   local width = vim.api.nvim_win_get_width(win)

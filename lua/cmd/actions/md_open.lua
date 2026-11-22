@@ -18,7 +18,7 @@ vim.api.nvim_create_autocmd('VimLeavePre', { group = augroup, callback = stop })
 -- preview current markdown in browser via $TOOLS_DIR/markdown-viewer/browser.sh (live reload on save)
 function M.md_open()
   local file_path, tools_dir = markdown_viewer.prepare()
-  if not file_path then return end
+  if not file_path or not tools_dir then return end
 
   -- restart server so it serves the current file
   stop()
